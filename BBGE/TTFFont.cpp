@@ -233,6 +233,7 @@ int TTFText::findLine(const std::string &label)
 
 void TTFText::onRender()
 {
+#ifdef BBGE_BUILD_OPENGL
 	/*
 	glColor4f(0,0,0,0.5);
 	glBegin(GL_QUADS);
@@ -266,6 +267,7 @@ void TTFText::onRender()
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	RenderObject::lastTextureApplied = 0;
+#endif
 
 
 	/*

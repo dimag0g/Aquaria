@@ -1196,7 +1196,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 	dsq->darkLayer.setLayers(LR_ELEMENTS13, LR_AFTER_EFFECTS);
 	debugLog("dark layer init");
 	dsq->darkLayer.init(user.video.darkbuffersize, user.video.darkfbuffer);
-	debugLog("dark layer togle...");
+	debugLog("dark layer toggle...");
 	dsq->darkLayer.toggle(0);
 	debugLog("done");
 
@@ -1223,7 +1223,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 	debugLog("NOT creating console (disabled in this build)");
 #endif
 
-	debugLog("1");
+	debugLog("init 1");
 
 	if (isDeveloperKeys())
 	{
@@ -1243,7 +1243,7 @@ This build is not yet final, and as such there are a couple things lacking. They
 		addRenderObject(cmDebug, LR_DEBUG_TEXT);
 	}
 
-	debugLog("2");
+	debugLog("init 2");
 
 	versionLabel = new BitmapText(&smallFont);
 	{
@@ -1323,11 +1323,11 @@ This build is not yet final, and as such there are a couple things lacking. They
 	cutscene_text2->followCamera = 1;
 	addRenderObject(cutscene_text2, LR_SUBTITLES);
 
-	debugLog("3");
+	debugLog("init 3");
 
 	loadBit(LOAD_GRAPHICS1);
 
-	debugLog("4");
+	debugLog("DSQ::init 4");
 
 	cursorGlow = new Quad;
 	{
@@ -1350,11 +1350,11 @@ This build is not yet final, and as such there are a couple things lacking. They
 	cursor->addChild(cursorBlinker, PM_NONE, RBP_OFF);
 	addRenderObject(cursorBlinker, LR_CURSOR);
 
-	debugLog("5");
+	debugLog("init 5");
 
 	recreateBlackBars();
 
-	debugLog("6");
+	debugLog("init 6");
 
 	overlay = new Quad;
 	{
@@ -1432,11 +1432,11 @@ This build is not yet final, and as such there are a couple things lacking. They
 	}
 	addRenderObject(screenTransition, LR_TRANSITION);
 
-	debugLog("8");
+	debugLog("init 8");
 
 	loadBit(LOAD_GRAPHICS2);
 
-	debugLog("9");
+	debugLog("init 9");
 
 
 	profRender = 0;
@@ -1758,6 +1758,7 @@ int DSQ::getEntityLayerToLayer(int lcode)
 void DSQ::setFilter(int ds)
 {
 	dsq_filter = ds;
+#ifdef BBGE_BUILD_OPENGL //!
 	if (dsq_filter == 0)
 	{
 		Texture::filter = GL_LINEAR;
@@ -1766,6 +1767,7 @@ void DSQ::setFilter(int ds)
 	{
 		Texture::filter = GL_NEAREST;
 	}
+#endif //!
 }
 
 void DSQ::setStory()

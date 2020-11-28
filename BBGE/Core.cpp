@@ -1910,6 +1910,22 @@ static bool lookup_all_glsyms(void)
 }
 #endif
 
+// Provide callback for OpenGL error messages
+void glErrorCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+	if(type == GL_DEBUG_TYPE_ERROR)
+	{
+		std::ostringstream os;
+		os << "GL CALLBACK: type = GL_ERROR, severity = " << severity << ", message = " << message;
+		debugLog(os.str());
+	} 
+}
 
 bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync, int bpp, bool recreate)
 {	
@@ -1994,6 +2010,11 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 			SDL_Quit();
 			exit(0);
 		}
+
+		// Enable OpenGL debug output
+		//glEnable(GL_DEBUG_OUTPUT);
+		//glDebugMessageCallback( glErrorCallback, 0 );
+		
 #else
 		Uint32 flags = 0;
 		flags = SDL_OPENGL;
@@ -3285,7 +3306,9 @@ void Core::setupRenderPositionAndScale()
 
 void Core::setupGlobalResolutionScale()
 {
+#ifdef BBGE_BUILD_OPENGL
 	glScalef(globalResolutionScale.x, globalResolutionScale.y, globalResolutionScale.z);
+#endif
 }
 
 void Core::initFrameBuffer()

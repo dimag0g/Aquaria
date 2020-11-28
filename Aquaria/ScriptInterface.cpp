@@ -42,6 +42,8 @@ extern "C"
 
 #include "../BBGE/MathFunctions.h"
 
+#undef quad // avoid conflict with quad precision types
+
 // Define this to 1 to check types of pointers passed to functions,
 // and warn if a type mismatch is detected. In this case,
 // the pointer is treated as NULL, to avoid crashing or undefined behavior.

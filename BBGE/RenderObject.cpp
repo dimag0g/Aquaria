@@ -910,7 +910,9 @@ void RenderObject::renderCall()
 		//collisionShape.render();
 	if (!RENDEROBJECT_SHAREATTRIBUTES)
 	{
+#ifdef BBGE_BUILD_OPENGL
 		glPopAttrib();
+#endif
 	}
 
 	for (Children::iterator i = children.begin(); i != children.end(); i++)
@@ -1027,6 +1029,7 @@ void RenderObject::renderCollision()
 	}
 	else if (collideRadius > 0)
 	{
+#ifdef BBGE_BUILD_OPENGL
 		glPushMatrix();
 		glLoadIdentity();
 		core->setupRenderPositionAndScale();
@@ -1044,6 +1047,7 @@ void RenderObject::renderCollision()
 		glDisable(GL_BLEND);
 		glTranslatef(offset.x, offset.y,0);
 		glPopMatrix();
+#endif
 	}
 }
 

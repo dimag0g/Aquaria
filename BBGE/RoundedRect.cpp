@@ -107,7 +107,7 @@ void RoundedRect::onRender()
 	int h2 = height/2;
 	//glDisable(GL_CULL_FACE);
 	float iter = 0.1f;
-
+#ifdef BBGE_BUILD_OPENGL
 	glBegin(GL_QUADS);
 	for (float angle = 0; angle < PI_HALF - iter; angle+=iter)
 	{
@@ -168,6 +168,7 @@ void RoundedRect::onRender()
 	glEnd();
 
 	//glEnable(GL_CULL_FACE);
+#endif
 }
 
 void RoundedRect::show()
@@ -259,6 +260,7 @@ void RoundButton::onUpdate(float dt)
 void RoundButton::onRender()
 {
 	int w2 = width/2, h2 = height/2;
+#ifdef BBGE_BUILD_OPENGL
 	glLineWidth(1);
 
 	glBegin(GL_LINES);
@@ -285,5 +287,6 @@ void RoundButton::onRender()
 		glVertex3f(-w2, -h2, 0);
 		glEnd();
 	}
+#endif
 }
 

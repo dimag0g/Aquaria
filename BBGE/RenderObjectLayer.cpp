@@ -396,8 +396,10 @@ void RenderObjectLayer::clearDisplayList()
 	const int size = displayList.size();
 	for (int i = 0; i < size; i++)
 	{
+#ifdef BBGE_BUILD_OPENGL
 		if (displayList[i].isList)
 			glDeleteLists(displayList[i].u.listID, 1);
+#endif
 	}
 
 	displayList.resize(0);
