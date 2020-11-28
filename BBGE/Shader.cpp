@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef BBGE_BUILD_SHADERS
 	// GL_ARB_shader_objects
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
 	PFNGLCREATEPROGRAMOBJECTARBPROC  glCreateProgramObjectARB  = NULL;
 	PFNGLDELETEOBJECTARBPROC         glDeleteObjectARB         = NULL;
 	PFNGLUSEPROGRAMOBJECTARBPROC     glUseProgramObjectARB     = NULL;
@@ -44,7 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	PFNGLUNIFORM2IVARBPROC           glUniform2ivARB            = NULL;
 	PFNGLUNIFORM3IVARBPROC           glUniform3ivARB            = NULL;
 	PFNGLUNIFORM4IVARBPROC           glUniform4ivARB            = NULL;
-
+#endif
 #endif
 
 bool Shader::_wasInited = false;
@@ -81,6 +82,7 @@ void Shader::staticInit()
 	else
 	{
 #ifdef BBGE_BUILD_SDL
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
 		glCreateProgramObjectARB  = (PFNGLCREATEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glCreateProgramObjectARB");
 		glDeleteObjectARB         = (PFNGLDELETEOBJECTARBPROC)SDL_GL_GetProcAddress("glDeleteObjectARB");
 		glUseProgramObjectARB     = (PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB");
@@ -101,7 +103,8 @@ void Shader::staticInit()
 		glUniform2ivARB           = (PFNGLUNIFORM2IVARBPROC)SDL_GL_GetProcAddress("glUniform2ivARB");
 		glUniform3ivARB           = (PFNGLUNIFORM3IVARBPROC)SDL_GL_GetProcAddress("glUniform3ivARB");
 		glUniform4ivARB           = (PFNGLUNIFORM4IVARBPROC)SDL_GL_GetProcAddress("glUniform4ivARB");
-#endif
+
+//#endif
 
 		if( !glCreateProgramObjectARB || !glDeleteObjectARB || !glUseProgramObjectARB ||
 			!glCreateShaderObjectARB || !glCreateShaderObjectARB || !glCompileShaderARB || 
@@ -114,6 +117,8 @@ void Shader::staticInit()
 			debugLog("One or more GL_ARB_shader_objects functions were not found");
 			goto end;
 		}
+#endif
+#endif
 	}
 
 	// everything fine when we are here
@@ -336,6 +341,7 @@ void Shader::_setUniform(Uniform *u)
 {
 	switch(u->type)
 	{
+#ifdef BBGE_BUILD_SHADERS
 		case GL_FLOAT:          glUniform1fvARB(u->location, 1, u->data.f); break;
 		case GL_FLOAT_VEC2_ARB: glUniform2fvARB(u->location, 1, u->data.f); break;
 		case GL_FLOAT_VEC3_ARB: glUniform3fvARB(u->location, 1, u->data.f); break;
@@ -344,6 +350,7 @@ void Shader::_setUniform(Uniform *u)
 		case GL_INT_VEC2_ARB:   glUniform2ivARB(u->location, 1, u->data.i); break;
 		case GL_INT_VEC3_ARB:   glUniform3ivARB(u->location, 1, u->data.i); break;
 		case GL_INT_VEC4_ARB:   glUniform4ivARB(u->location, 1, u->data.i); break;
+#endif
 	}
 	u->dirty = false;
 }
@@ -375,8 +382,9 @@ bool Shader::Uniform::operator< (const Uniform& b) const
 
 void Shader::_queryUniforms()
 {
+#ifdef BBGE_BUILD_SHADERS
 	glGetObjectParameterivARB(g_programObj, GL_OBJECT_ACTIVE_UNIFORMS_ARB , &numUniforms);
-
+#endif
 	if (numUniforms <= 0)
 	{
 		uniforms.clear();
@@ -391,10 +399,12 @@ void Shader::_queryUniforms()
 		Uniform u;
 		GLint size = 0;
 		GLenum type = 0;
+#ifdef BBGE_BUILD_SHADERS
 		glGetActiveUniformARB(g_programObj, i, sizeof(u.name), NULL, &size, &type, &u.name[0]);
 		if(!type || !size)
 			continue;
 		u.location = glGetUniformLocationARB(g_programObj, u.name);
+#endif
 		if(u.location == -1)
 			continue;
 

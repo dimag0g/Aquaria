@@ -55,7 +55,7 @@
 #define LUA_USE_MKSTEMP
 #define LUA_USE_ISATTY
 #define LUA_USE_POPEN
-#define LUA_USE_ULONGJMP
+//#define LUA_USE_ULONGJMP
 #endif
 
 

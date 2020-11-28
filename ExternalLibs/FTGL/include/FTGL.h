@@ -37,7 +37,7 @@ typedef float    FTGL_FLOAT;
 
     // Non windows platforms - don't require nonsense as seen above :-)    
     #if 1
-        #include "GL/gl.h"
+        #include <glad/glad.h> //! #include "GL/gl.h"
         //#include "GL/glu.h"
     #else
     #ifndef __gl_h_

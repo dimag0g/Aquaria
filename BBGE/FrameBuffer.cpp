@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef BBGE_BUILD_FRAMEBUFFER
 #if defined(BBGE_BUILD_OPENGL)
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
 	PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
 	PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
 	PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
@@ -42,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT = NULL;
 	PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT = NULL;
 	PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT = NULL;
+#endif
 #endif
 #endif
 
@@ -138,6 +140,7 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 	else
 	{
 #if defined(BBGE_BUILD_SDL)
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
 		if (!glIsRenderbufferEXT)
 		{
 			glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsRenderbufferEXT");
@@ -158,7 +161,6 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 			glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC)SDL_GL_GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
 			glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)SDL_GL_GetProcAddress("glGenerateMipmapEXT");
 		}
-#endif
 
 		if( !glIsRenderbufferEXT || !glBindRenderbufferEXT || !glDeleteRenderbuffersEXT ||
 			!glGenRenderbuffersEXT || !glRenderbufferStorageEXT || !glGetRenderbufferParameterivEXT ||
@@ -171,6 +173,8 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 			return false;
 		}
 
+#endif
+#endif
 		//
 		// Create a frame-buffer object and a render-buffer object...
 		//
@@ -284,6 +288,7 @@ void FrameBuffer::unloadDevice()
 void FrameBuffer::resetOpenGL()
 {
 #if defined(BBGE_BUILD_FRAMEBUFFER)
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
 	// set these back to NULL and reload them upon reinit, otherwise they
 	//  might point to a bogus address when the shared library is reloaded.
 	glIsRenderbufferEXT = NULL;
@@ -303,6 +308,7 @@ void FrameBuffer::resetOpenGL()
 	glFramebufferRenderbufferEXT = NULL;
 	glGetFramebufferAttachmentParameterivEXT = NULL;
 	glGenerateMipmapEXT = NULL;
+#endif
 #endif
 }
 #endif

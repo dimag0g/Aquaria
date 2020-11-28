@@ -97,8 +97,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #if defined(BBGE_BUILD_OPENGL)
 	#define GL_GLEXT_LEGACY 1
-	#include "gl.h"
-	#include "glext.h"
+	#define GL_GLEXT_PROTOTYPES
+	#include <glad/glad.h>
 #endif
 
 #define compile_assert(pred) switch(0){case 0:case (pred):;}

@@ -1,3 +1,16 @@
+set(DEVKITPRO $ENV{DEVKITPRO})
+set(CMAKE_LEGACY_CYGWIN_WIN32 0)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_C_COMPILER ${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-gcc.exe)
+set(CMAKE_CXX_COMPILER ${DEVKITPRO}/devkitA64/bin/aarch64-none-elf-g++.exe)
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -I${DEVKITPRO}/portlibs/switch/include -I${DEVKITPRO}/libnx/include -march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -I${DEVKITPRO}/portlibs/switch/include -I${DEVKITPRO}/libnx/include -march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE")
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -L${DEVKITPRO}/portlibs/switch/lib -L${DEVKITPRO}/libnx/lib -specs=${DEVKITPRO}/libnx/switch.specs")
+add_definitions(-D__SWITCH__)
+message(STATUS "C ${CMAKE_C_FLAGS}")
+message(STATUS "CXX ${CMAKE_CXX_FLAGS}")
+message(STATUS "LD ${CMAKE_EXE_LINKER_FLAGS}")
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(Aquaria)
 
@@ -30,7 +43,7 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 OPTION(AQUARIA_DEMO_BUILD "Demo Build?" FALSE)
 OPTION(AQUARIA_USE_VFS "Use Virtual File System? Required for some additional features." TRUE)
 
-OPTION(AQUARIA_USE_SDL2 "Use SDL2" FALSE)
+OPTION(AQUARIA_USE_SDL2 "Use SDL2" TRUE)
 OPTION(AQUARIA_USE_GLM "Use GLM for matrix math" TRUE)
 
 # No Steamworks SDK for Linux at the moment. Roll our own achievements.
@@ -202,7 +215,11 @@ if(NOT SDL_FOUND)
         endif(AQUARIA_USE_SDL2)
         set(SDL_LIBRARY ${SDLMAIN_LIBRARY} ${SDL_LIBRARY}) # not seen by user
     else(MACOSX)
-        message(SEND_ERROR "We don't have a prebuilt SDL for this platform.")
+        #message(SEND_ERROR "We don't have a prebuilt SDL for this platform.")
+
+	set(SDL_INCLUDE_DIR "${DEVKITPRO}/portlibs/switch/include/SDL2")
+	set(SDL_LIBRARY "-lSDL2_mixer -lvorbisidec -lmodplug -lstdc++ -lm -lmpg123 -lm -lopusfile -logg -lopus -lm -lSDL2_image -lpng16 -lz -lm -lnx -lz -ljpeg -lwebp -lm -lSDL2 -march=armv8-a -fPIE -lEGL -lglapi -ldrm_nouveau -lnx -lglad -lEGL -lglapi -ldrm_nouveau -lnx")
+	set(SDL_FOUND TRUE)
     endif(MACOSX)
 endif(NOT SDL_FOUND)
 
@@ -219,7 +236,9 @@ if (NOT OPENAL_FOUND)
         message(STATUS "Using internal copy of OpenAL")
         set(OPENAL_LIBRARY "${OPENALDIR}/lib/win32/OpenAL32.lib" CACHE FILEPATH "Where the OpenAL library can be found" FORCE)
     else(WIN32)
-        message(SEND_ERROR "We don't have a prebuilt OpenAL for this platform.")
+        #message(SEND_ERROR "We don't have a prebuilt OpenAL for this platform.")
+        set(OPENAL_INCLUDE_DIR "${DEVKITPRO}/portlibs/switch/include/AL" CACHE PATH "OpenAL include directory" FORCE)
+        set(OPENAL_LIBRARY "-lmojoal" CACHE FILEPATH "Where the OpenAL library can be found" FORCE)
     endif(WIN32)
 endif (NOT OPENAL_FOUND)
 
@@ -306,7 +325,7 @@ ADD_DEFINITIONS(-DBBGE_BUILD_SDL=1)
 ADD_DEFINITIONS(-DBBGE_BUILD_FRAMEBUFFER=1)
 ADD_DEFINITIONS(-DBBGE_BUILD_SHADERS=1)
 ADD_DEFINITIONS(-DBBGE_BUILD_OPENGL=1)
-ADD_DEFINITIONS(-DBBGE_BUILD_OPENGL_DYNAMIC=1)
+#ADD_DEFINITIONS(-DBBGE_BUILD_OPENGL_DYNAMIC=1)
 ADD_DEFINITIONS(-DBBGE_BUILD_FMOD_OPENAL_BRIDGE=1)
 IF(AQUARIA_USE_VFS)
     ADD_DEFINITIONS(-DBBGE_BUILD_VFS=1)
@@ -358,7 +377,7 @@ ENDIF(WIN32)
 
 # Build Lua with Unix _setjmp/_longjmp support.
 IF(UNIX AND NOT HAIKU)
-    ADD_DEFINITIONS(-DLUA_USE_ULONGJMP=1)
+#    ADD_DEFINITIONS(-DLUA_USE_ULONGJMP=1)
 ENDIF()
 
 IF(CMAKE_COMPILER_IS_GNUCC)
@@ -739,6 +758,8 @@ ENDIF(AQUARIA_USE_VFS)
 IF(WIN32)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "ws2_32")
 ENDIF(WIN32)
+
+SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "nx")
 
 IF(MACOSX)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "-framework Carbon")

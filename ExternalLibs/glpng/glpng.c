@@ -34,7 +34,7 @@
 //#include <GL/gl.h>
 //#include <GL/glext.h>
 #include "../glpng.h"
-#include "gl.h"
+#include <glad/glad.h> //! #include "gl.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
