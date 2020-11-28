@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //WARNING: FrameBuffer objects have to have reloadDevice/unloadDevice called manually!
 
-#if defined(BBGE_BUILD_FRAMEBUFFER) && defined(DBBGE_BUILD_OPENGL_DYNAMIC)
+#ifdef BBGE_BUILD_FRAMEBUFFER
+#if defined(BBGE_BUILD_OPENGL)
 	PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
 	PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
 	PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
@@ -41,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT = NULL;
 	PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT = NULL;
 	PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT = NULL;
+#endif
 #endif
 
 FrameBuffer::FrameBuffer()
@@ -135,7 +137,7 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 	}
 	else
 	{
-#if defined(BBGE_BUILD_SDL) && defined(DBBGE_BUILD_OPENGL_DYNAMIC)
+#if defined(BBGE_BUILD_SDL)
 		if (!glIsRenderbufferEXT)
 		{
 			glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC)SDL_GL_GetProcAddress("glIsRenderbufferEXT");
@@ -156,6 +158,7 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 			glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC)SDL_GL_GetProcAddress("glGetFramebufferAttachmentParameterivEXT");
 			glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC)SDL_GL_GetProcAddress("glGenerateMipmapEXT");
 		}
+#endif
 
 		if( !glIsRenderbufferEXT || !glBindRenderbufferEXT || !glDeleteRenderbuffersEXT ||
 			!glGenRenderbuffersEXT || !glRenderbufferStorageEXT || !glGetRenderbufferParameterivEXT ||
@@ -167,7 +170,7 @@ bool FrameBuffer::init(int width, int height, bool fitToScreen, GLint filter)
 			debugLog("One or more EXT_framebuffer_object functions were not found");
 			return false;
 		}
-#endif
+
 		//
 		// Create a frame-buffer object and a render-buffer object...
 		//
@@ -280,7 +283,7 @@ void FrameBuffer::unloadDevice()
 #if defined(BBGE_BUILD_SDL)
 void FrameBuffer::resetOpenGL()
 {
-#if defined(BBGE_BUILD_FRAMEBUFFER) && defined(DBBGE_BUILD_OPENGL_DYNAMIC)
+#if defined(BBGE_BUILD_FRAMEBUFFER)
 	// set these back to NULL and reload them upon reinit, otherwise they
 	//  might point to a bogus address when the shared library is reloaded.
 	glIsRenderbufferEXT = NULL;

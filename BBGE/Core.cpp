@@ -1911,7 +1911,7 @@ static bool lookup_all_glsyms(void)
 #endif
 
 // Provide callback for OpenGL error messages
-void glErrorCallback( GLenum source,
+/*void glErrorCallback( GLenum source,
                  GLenum type,
                  GLuint id,
                  GLenum severity,
@@ -1925,7 +1925,7 @@ void glErrorCallback( GLenum source,
 		os << "GL CALLBACK: type = GL_ERROR, severity = " << severity << ", message = " << message;
 		debugLog(os.str());
 	} 
-}
+}*/
 
 bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync, int bpp, bool recreate)
 {	
