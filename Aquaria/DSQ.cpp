@@ -4129,7 +4129,7 @@ void DSQ::action(int id, int state)
 			}
 			else
 			{
-				pauseCutscene(true);
+				//pauseCutscene(true);  TODO: investigate cutscene hangs
 			}
 		}
 	}

@@ -42,7 +42,7 @@
         <Action name="SwimLeft" input="0 KEY_A KEY_LEFT JOY_BUTTON_13 "/>
         <Action name="SwimRight" input="0 KEY_D KEY_RIGHT JOY_BUTTON_14 "/>
         <Action name="Roll" input="0 KEY_R 0 JOY_BUTTON_2 "/>
-        <Action name="Revert" input="0 KEY_X 0 JOY_BUTTON_2 "/>
+        <Action name="Revert" input="0 KEY_X 0 JOY_BUTTON_3 "/>
         <Action name="WorldMap" input="0 KEY_Q 0 JOY_BUTTON_10 "/>
         <Action name="Escape" input="0 KEY_ESCAPE 0 JOY_BUTTON_4 "/>
         <Action name="PrevPage" input="0 KEY_A KEY_LEFT JOY_BUTTON_13 "/>

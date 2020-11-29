@@ -1,4 +1,4 @@
-﻿This is a port of Aquaria game to Nintendo Switch. It's a homebrew app, so you need to be running custom firmware for it to work.
+This is a port of Aquaria game to Nintendo Switch. It's a homebrew app, so you need to be running custom firmware for it to work.
 
 [1] BUILDING
 ------------
@@ -55,19 +55,28 @@ This build of Aquaria was tested on 10.2.0|AMS 0.14.4|S (FAT32). exFAT is not re
 Currently, the game only works with joy-cons attached.
 Alternative controllers (keyboards, mouses, etc.) might work but weren't tested.
 
+Default keys (which can be changed in the game options) are:
+- A - Primary Action (sing/shoot)
+- B - Secondary Action (swim boost)
+- Y - Roll
+- X - Revert to song form
+- L - Look around
+- R - Open map
+- ⊖ - Escape
+- ⊕ - Quit game
+- D-PAD / L-stick - navigate
+
 [4] TODO
 --------
 
 Here's a list of known bugs / missing features, approximately in order of priority. Don't bother reporting those as issues.
 
-- crash on game saving
 - broken world map display
-- hang when skipping cutscenes
-- crash when using dpad right arrow
+- game hangs when skipping cutscenes - skippin cutscenes disabled
 - no support for wireless controllers / touchscreen
 - no support for mods
 - crash on exit
 - no support for docked mode
-- no support for demo version support
+- no demo version support
 - no locale support
 

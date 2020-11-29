@@ -3775,7 +3775,7 @@ void Core::pollEvents()
 			}
 			break;
 			
-			//! Switch joycons
+			// Handle Switch joycons
             case SDL_JOYBUTTONDOWN:
 			{
 				if (event.jbutton.button == 10) //JOY_PLUS - quit game
@@ -3784,6 +3784,7 @@ void Core::pollEvents()
 					quit();
 				}
 			}
+			break;
 
 			#ifdef BBGE_BUILD_SDL2
 			case SDL_WINDOWEVENT:
@@ -4846,7 +4847,7 @@ unsigned char *Core::grabScreenshot(int x, int y, int w, int h)
 	glPixelTransferi(GL_GREEN_SCALE, 1); glPixelTransferi(GL_GREEN_BIAS, 0);
 	glPixelTransferi(GL_BLUE_SCALE, 1); glPixelTransferi(GL_BLUE_BIAS, 0);
 	glPixelTransferi(GL_ALPHA_SCALE, 1); glPixelTransferi(GL_ALPHA_BIAS, 0);
-	glRasterPos2i(0, 0);
+	//glRasterPos2i(0, 0); TODO: investigate the crash
 	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)imageData);
 	glPopAttrib();
 
