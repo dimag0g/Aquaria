@@ -3775,16 +3775,6 @@ void Core::pollEvents()
 			}
 			break;
 			
-			// Handle Switch joycons
-            case SDL_JOYBUTTONDOWN:
-			{
-				if (event.jbutton.button == 10) //JOY_PLUS - quit game
-				{
-					quitNestedMain();
-					quit();
-				}
-			}
-			break;
 
 			#ifdef BBGE_BUILD_SDL2
 			case SDL_WINDOWEVENT:
@@ -4946,7 +4936,7 @@ void Core::saveSizedScreenshotTGA(const std::string &filename, int sz, int crop3
 	os << "copyw: " << copyw << " copyh: " << copyh << std::endl;
 	debugLog(os.str());
 
-	glRasterPos2i(0, 0);
+	//! glRasterPos2i(0, 0); TODO: investigate the crash
 	
 	/*
 	glPushAttrib(GL_ALL_ATTRIB_BITS);

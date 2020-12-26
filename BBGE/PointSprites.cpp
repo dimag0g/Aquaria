@@ -45,8 +45,13 @@ void PointSprites::init()
 #endif
 
 #ifdef BBGE_BUILD_SDL
+#ifdef DBBGE_BUILD_OPENGL_DYNAMIC
         glPointParameterfARB  = (PFNGLPOINTPARAMETERFARBPROC)SDL_GL_GetProcAddress("glPointParameterfARB");
         glPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC)SDL_GL_GetProcAddress("glPointParameterfvARB");
+#else
+        glPointParameterfARB  = (PFNGLPOINTPARAMETERFARBPROC)glPointParameterf;
+        glPointParameterfvARB = (PFNGLPOINTPARAMETERFVARBPROC)glPointParameterfv;
+#endif
 #endif
 
         if( !glPointParameterfARB || !glPointParameterfvARB )

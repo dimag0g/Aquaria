@@ -1,5 +1,6 @@
 This is a port of Aquaria game to Nintendo Switch. It's a homebrew app, so you need to be running custom firmware for it to work.
 
+
 [1] BUILDING
 ------------
 
@@ -10,9 +11,11 @@ You will need to install the [devkitPro](https://devkitpro.org/) toolchain. Make
     libnx switch-sdl2_image switch-sdl2_mixer switch-mesa
 
 You'll need to build and install two additional libraries, [mojoAL-switch](https://github.com/TomBebb/mojoAL-switch) and [GLAD](https://glad.dav1d.de/).
-For GLAD, I have used OpenGL 2.1 compatibility profile with extensions. Versions of those libraries which I have used are saved in `Aquaria\ExternalLibs`.
+For GLAD, I have used OpenGL 2.1 compatibility profile. Versions of those libraries which I have used are saved in `Aquaria\ExternalLibs`.
 
 Then follow the usual steps to build Aquaria.
+
+If you don't intend to do any coding and just want to play, grab the latest [release](https://github.com/dimag0g/Aquaria/releases) instead.
 
 
 [2] SETUP
@@ -40,43 +43,43 @@ In the end you should have the following directory tree on your SD card:
          +--- ...
          +--- aquaria.nro
 
-**/!\** Be careful if you do this on a Mac with finder because
-    it replaces whole folders instead of just merging the new files in.
+⚠ Be careful if you do this on a Mac with finder because it replaces whole folders instead of just merging the new files in.
 
-**/!\** Make sure you don't forget the .Aquaria folder, which may be hidden by your file manager.
+⚠ Make sure you don't forget the `.Aquaria` folder which may be hidden by your file manager.
 
 Lastly, if you want to play the included default mods,
 copy `game_scripts/_mods` over your local `_mods` directory.
+
 
 [3] RUNNING
 -----------
 
 This build of Aquaria was tested on 10.2.0|AMS 0.14.4|S (FAT32). exFAT is not recommended.
-Currently, the game only works with joy-cons attached.
 Alternative controllers (keyboards, mouses, etc.) might work but weren't tested.
 
-Default keys (which can be changed in the game options) are:
-- A - Primary Action (sing/shoot)
-- B - Secondary Action (swim boost)
-- Y - Roll
-- X - Revert to song form
-- L - Look around
-- R - Open map
-- ⊖ - Escape
-- ⊕ - Quit game
+Default keys (most of which can be changed in the game options) are:
+- A/R - Primary Action (sing/shoot)
+- B/L - Secondary Action (swim boost)
+- X - Song form
+- Y - Energy form
+- ⊖ - Open map
+- ⊕ - Menu/Escape
 - D-PAD / L-stick - navigate
+- D-PAD ▴ - Cook food
+- D-PAD ▾ - Remove food from wok pan
+- L-stick push - Roll
+- R-stick + push - Look around
 
 [4] TODO
 --------
 
 Here's a list of known bugs / missing features, approximately in order of priority. Don't bother reporting those as issues.
 
-- broken world map display
-- game hangs when skipping cutscenes - skippin cutscenes disabled
-- no support for wireless controllers / touchscreen
-- no support for mods
-- crash on exit
-- no support for docked mode
-- no demo version support
+- incomplete controls support(no ZR/ZL, no touchscreen)
+- no support for full HD in docked mode
+- no mods downloading support
 - no locale support
-
+- game hangs when skipping cutscenes - skippin cutscenes disabled
+- glitches in world map - background made solid, transitions are still buggy
+- occasional crash on exit
+- no demo version support

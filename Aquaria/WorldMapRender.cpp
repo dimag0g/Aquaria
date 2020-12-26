@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace WorldMapRenderNamespace
 {
-	const float WORLDMAP_UNDERLAY_ALPHA = 0.8;
+	const float WORLDMAP_UNDERLAY_ALPHA = 1;
 
 	float baseMapSegAlpha		= 0.4;
 	float visibleMapSegAlpha	= 0.8;
@@ -840,7 +840,7 @@ WorldMapRender::WorldMapRender() : RenderObject(), ActionMapper()
 	underlay->autoHeight = AUTO_VIRTUALHEIGHT;
 	underlay->followCamera = 1;
 	underlay->alpha = 0;
-	dsq->game->addRenderObject(underlay, LR_HUDUNDERLAY);
+	dsq->game->addRenderObject(underlay, LR_WORLDMAP); //!
 
 	addHintQuad1 = new Quad("gems/pyramidyellow", Vector(0,0));
 	addHintQuad1->followCamera = 1;
@@ -1437,7 +1437,7 @@ void WorldMapRender::toggle(bool turnON)
 
 		
 		//dsq->game->hudUnderlay->alpha.interpolateTo(WORLDMAP_UNDERLAY_ALPHA, 0.2);
-		underlay->alpha.interpolateTo(WORLDMAP_UNDERLAY_ALPHA, 0.2);
+		underlay->alpha = WORLDMAP_UNDERLAY_ALPHA; //!.interpolateTo(WORLDMAP_UNDERLAY_ALPHA, 0.2); TODO: investigate rendering issues
 
 		addHintQuad1->alpha.interpolateTo(1.0, 0.2);
 		addHintQuad2->alpha.interpolateTo(1.0, 0.2);
@@ -1514,7 +1514,7 @@ void WorldMapRender::toggle(bool turnON)
 
 		dsq->game->togglePause(false);
 		//dsq->game->hudUnderlay->alpha.interpolateTo(0, 0.2);
-		underlay->alpha.interpolateTo(0, 0.2);
+		underlay->alpha = 0; //! .interpolateTo(0, 0.2); TODO: investigate rendering issues
 		addHintQuad1->alpha.interpolateTo(0, 0.2);
 		addHintQuad2->alpha.interpolateTo(0, 0.2);
 		helpButton->alpha.interpolateTo(0, 0.2);

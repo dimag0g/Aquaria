@@ -9,7 +9,7 @@
 
 <Audio>
     <Mic on="0" octave="0"/>
-    <Volume sfx="1" vox="1" mus="1" subs="1"/>
+    <Volume sfx="0.75" vox="1" mus="0.5" subs="1"/>
     <Device name=""/>
     <Prebuffer on="0"/>
 </Audio>
@@ -31,27 +31,27 @@
     <AutoAim on="1"/>
     <Targeting on="1"/>
     <JoyCursorSpeed v="4"/>
-    <JoyAxes s1ax="0" s1ay="0" s2ax="0" s2ay="0" s1dead="0.30000001192092896" s2dead="0.30000001192092896"/>
+    <JoyAxes s1ax="0" s1ay="0" s2ax="0" s2ay="0" s1dead="0.25" s2dead="0.25"/>
     <ActionSet>
         <Action name="lmb" input="MOUSE_BUTTON_LEFT KEY_SPACE 0 JOY_BUTTON_0 "/>
         <Action name="rmb" input="MOUSE_BUTTON_RIGHT KEY_LCONTROL 0 JOY_BUTTON_1 "/>
-        <Action name="PrimaryAction" input="MOUSE_BUTTON_LEFT KEY_SPACE 0 JOY_BUTTON_0 "/>
-        <Action name="SecondaryAction" input="MOUSE_BUTTON_RIGHT KEY_LCONTROL 0 JOY_BUTTON_1 "/>
+        <Action name="PrimaryAction" input="MOUSE_BUTTON_LEFT KEY_SPACE 0 JOY_BUTTON_9 "/>
+        <Action name="SecondaryAction" input="MOUSE_BUTTON_RIGHT KEY_LCONTROL 0 JOY_BUTTON_10 "/>
         <Action name="SwimUp" input="0 KEY_W KEY_UP JOY_BUTTON_11 "/>
         <Action name="SwimDown" input="0 KEY_S KEY_DOWN JOY_BUTTON_12 "/>
         <Action name="SwimLeft" input="0 KEY_A KEY_LEFT JOY_BUTTON_13 "/>
         <Action name="SwimRight" input="0 KEY_D KEY_RIGHT JOY_BUTTON_14 "/>
-        <Action name="Roll" input="0 KEY_R 0 JOY_BUTTON_2 "/>
+        <Action name="Roll" input="0 KEY_R 0 JOY_BUTTON_7 "/>
         <Action name="Revert" input="0 KEY_X 0 JOY_BUTTON_3 "/>
-        <Action name="WorldMap" input="0 KEY_Q 0 JOY_BUTTON_10 "/>
-        <Action name="Escape" input="0 KEY_ESCAPE 0 JOY_BUTTON_4 "/>
+        <Action name="WorldMap" input="0 KEY_Q 0 JOY_BUTTON_4 "/>
+        <Action name="Escape" input="0 KEY_ESCAPE 0 JOY_BUTTON_6 "/>
         <Action name="PrevPage" input="0 KEY_A KEY_LEFT JOY_BUTTON_13 "/>
         <Action name="NextPage" input="0 KEY_D KEY_RIGHT JOY_BUTTON_14 "/>
         <Action name="CookFood" input="0 KEY_W KEY_UP JOY_BUTTON_11 "/>
-        <Action name="FoodLeft" input="0 KEY_S KEY_DOWN JOY_BUTTON_13 "/>
-        <Action name="FoodRight" input="0 0 0 JOY_BUTTON_14 "/>
-        <Action name="FoodDrop" input="0 0 0 JOY_BUTTON_12 "/>
-        <Action name="Look" input="MOUSE_BUTTON_MIDDLE KEY_E 0 JOY_BUTTON_9 "/>
+        <Action name="FoodLeft" input="0 KEY_S KEY_DOWN JOY_BUTTON_12 "/>
+        <Action name="FoodRight" input="0 0 0 0 "/>
+        <Action name="FoodDrop" input="0 0 0 0 "/>
+        <Action name="Look" input="MOUSE_BUTTON_MIDDLE KEY_E 0 JOY_BUTTON_8 "/>
         <Action name="ToggleHelp" input="0 KEY_H KEY_F1 0 "/>
         <Action name="SongSlot1" input="0 KEY_1 0 0 "/>
         <Action name="SongSlot2" input="0 KEY_2 0 0 "/>
@@ -74,4 +74,4 @@
 
 <Data savePage="0" saveSlot="0" activePatches=""/>
 
-<Network masterServer=""/>
+<Network masterServer="fg.wzff.de/aqmods/"/>
