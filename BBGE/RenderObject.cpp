@@ -1377,7 +1377,7 @@ bool RenderObject::setTexture(const std::string &n)
 
 	TextureLoadResult res = TEX_FAILED;
 	CountedPtr<Texture> tex = core->addTexture(name, &res);
-	setTexturePointer(tex);
+	setTexturePointer(res == TEX_FAILED ? static_cast<CountedPtr<Texture>>(NULL) : tex); //!
 	return !!tex && res != TEX_FAILED;
 }
 
