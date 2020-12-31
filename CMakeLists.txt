@@ -393,8 +393,8 @@ IF(CMAKE_COMPILER_IS_GNUCC)
 
     # -O3 breaks on some GCC/MinGW versions, make sure CMake does not set this as default.
     # Exceptions are not used, excluding support for release builds adds less bulk as well.
-    set(CMAKE_C_FLAGS_RELEASE "-O2" CACHE STRING "Flags used for release builds" FORCE)
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -fno-exceptions" CACHE STRING "Flags used for release builds" FORCE)
+    set(CMAKE_C_FLAGS_RELEASE "-O3" CACHE STRING "Flags used for release builds" FORCE)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fno-exceptions" CACHE STRING "Flags used for release builds" FORCE)
 
     # !!! FIXME: probably not safe long-term.
     # CMake mailing list had this hack for getting rid of -rdynamic:
