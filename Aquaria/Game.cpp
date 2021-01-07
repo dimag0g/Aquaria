@@ -451,12 +451,12 @@ void FoodSlot::eatMe()
 {
 	if (ingredient && !dsq->isNested())
 	{
-		for (int i = 0; i < foodHolders.size(); i++)
+		for (auto& holder: foodHolders)
 		{
-			if (!foodHolders[i]->isTrash() && !foodHolders[i]->isEmpty())
+			if (!holder->isTrash() && !holder->isEmpty())
 			{
 				dsq->sound->playSfx("denied");
-				foodHolders[i]->dropFood();
+				holder->dropFood();
 				return;
 			}
 		}
@@ -556,14 +556,14 @@ void FoodSlot::onUpdate(float dt)
 					else
 					{
 						bool droppedIn = false;
-						for (int i = 0; i < foodHolders.size(); i++)
+						for (auto& holder: foodHolders)
 						{
-							bool in = (foodHolders[i]->getWorldPosition() - wp).isLength2DIn(32);
+							bool in = (holder->getWorldPosition() - wp).isLength2DIn(32);
 							if (in)
 							{
 								droppedIn = true;
 
-								if (foodHolders[i]->isTrash())
+								if (holder->isTrash())
 								{
 									discard();
 
@@ -573,9 +573,9 @@ void FoodSlot::onUpdate(float dt)
 									break;
 									//return;
 								}
-								else if (foodHolders[i]->isEmpty() && foodHolders[i]->isValid())
+								else if (holder->isEmpty() && holder->isValid())
 								{
-									foodHolders[i]->setIngredient(ingredient);
+									holder->setIngredient(ingredient);
 									inCookSlot = true;
 									refresh(true);
 									break;
@@ -938,13 +938,13 @@ Ingredient *Game::getNearestIngredient(const Vector &pos, int radius)
 	int r2 = sqr(radius);
 	Ingredient *returnIngredient = 0;
 
-	for (Ingredients::iterator i = ingredients.begin(); i != ingredients.end(); i++)
+	for (auto& ing: ingredients)
 	{
-		int len = (pos - (*i)->position).getSquaredLength2D();
+		int len = (pos - ing->position).getSquaredLength2D();
 		if (len <= r2 && (closest == - 1 || len < closest))
 		{
 			closest = len;
-			returnIngredient = (*i);
+			returnIngredient = ing;
 		}
 	}
 	return returnIngredient;
@@ -1084,12 +1084,12 @@ void Game::flipSceneVertical(int flipY)
 	}
 	int i = 0;
 	int flipTY = (flipY/TILE_SIZE)-1;
-	for (i = 0; i < obsRows.size(); i++)
+	for (auto& row: obsRows)
 	{
-		if (obsRows[i].ty < flipTY)
-			obsRows[i].ty = flipTY + (flipTY - obsRows[i].ty);
+		if (row.ty < flipTY)
+			row.ty = flipTY + (flipTY - row.ty);
 		else
-			obsRows[i].ty = flipTY - (obsRows[i].ty - flipTY);
+			row.ty = flipTY - (row.ty - flipTY);
 	}
 	for (i = 0; i < dsq->getNumElements(); i++)
 	{
@@ -1250,52 +1250,6 @@ Game::~Game()
 	tileCache.clean();
 	game = 0;
 }
-/*
-void Game::doChoiceMenu(Vector position, std::vector<std::string> choices)
-{
-	dsq->gui.openChoiceMenu(position);
-	for (int i = 0; i < choices.size(); i++)
-	{
-		dsq->gui.choiceMenu.addEntry(choices[i]);
-	}
-	selectedChoice = "";
-	while (selectedChoice.empty())
-	{
-		dsq->delay(10);
-	}
-	dsq->gui.closeChoiceMenu();
-}
-*/
-
-/*
-void Game::onAssignMenuScreenItemToSlot0()
-{
-	if (!dsq->continuity.hudVisible) return;
-	if (!selectedMenuScreenItem) return;
-	dsq->continuity.setItemSlot(0, selectedMenuScreenItem->getItemIndex());
-}
-
-void Game::onAssignMenuScreenItemToSlot1()
-{
-	if (!dsq->continuity.hudVisible) return;
-	if (!selectedMenuScreenItem) return;
-	dsq->continuity.setItemSlot(1, selectedMenuScreenItem->getItemIndex());
-}
-
-void Game::onAssignMenuScreenItemToSlot2()
-{
-	if (!dsq->continuity.hudVisible) return;
-	if (!selectedMenuScreenItem) return;
-	dsq->continuity.setItemSlot(2, selectedMenuScreenItem->getItemIndex());
-}
-
-void Game::onAssignMenuScreenItemToSlot3()
-{
-	if (!dsq->continuity.hudVisible) return;
-	if (!selectedMenuScreenItem) return;
-	dsq->continuity.setItemSlot(3, selectedMenuScreenItem->getItemIndex());
-}
-*/
 
 Quad *menu_blackout = 0;
 
@@ -1370,8 +1324,6 @@ void Game::showInGameMenu(bool ignoreInput, bool optionsOnly, MenuPage menuPage)
 				songSlots[i]->alpha = 0;
 		}
 
-
-
 		/*
 		std::ostringstream os;
 		os << "Exp: " << dsq->continuity.exp;
@@ -1422,13 +1374,10 @@ void Game::showInGameMenu(bool ignoreInput, bool optionsOnly, MenuPage menuPage)
 		eYes->setHidden(false);
 		eNo->setHidden(false);
 		menuIconGlow->setHidden(false);
-		for (int i = 0; i < menu.size(); i++)
-			menu[i]->setHidden(false);
-		for (int i = 0; i < treasureSlots.size(); i++)
-			treasureSlots[i]->setHidden(false);
+		for (auto& m: menu) m->setHidden(false);
+		for (auto& ts: treasureSlots) ts->setHidden(false);
 		treasureDescription->setHidden(false);
-		for (int i = 0; i < foodSlots.size(); i++)
-			foodSlots[i]->setHidden(false);
+		for (auto& fs: foodSlots) fs->setHidden(false);
 
 
 		if (dsq->game->miniMapRender)
@@ -1490,10 +1439,10 @@ void Game::showInGameMenu(bool ignoreInput, bool optionsOnly, MenuPage menuPage)
 				{
 					menuSongs->alpha.interpolateTo(1, t);
 				}
-				for (i = 0; i < menu.size(); i++)
+				for (auto& m: menu)
 				{
-					menu[i]->scale = Vector(0,0);
-					menu[i]->alpha = 0;
+					m->scale = Vector(0,0);
+					m->alpha = 0;
 				}
 				((AquariaMenuItem*)menu[5])->setFocus(true);
 			}
@@ -1503,28 +1452,19 @@ void Game::showInGameMenu(bool ignoreInput, bool optionsOnly, MenuPage menuPage)
 
 		if (!optionsOnly)
 		{
-			for (i = 0; i < menu.size(); i++)
+			for (auto& m: menu)
 			{
-				menu[i]->scale.interpolateTo(Vector(1, 1), 0.15);
-
-				menu[i]->alpha.interpolateTo(1, 0.15);
+				m->scale.interpolateTo(Vector(1, 1), 0.15);
+				m->alpha.interpolateTo(1, 0.15);
 			}
 
 			menuIconGlow->alpha.interpolateTo(1, 0.5);
 		}
 
 		menuOpenTimer = 0;
-
 		inGameMenu = true;
-
-
-
 		dsq->routeShoulder = false;
-
-
 		dsq->screenTransition->transition(MENUPAGETRANSTIME);
-
-
 
 		if (optionsOnly)
 		{
@@ -1578,10 +1518,7 @@ void Game::hideInGameMenu(bool effects, bool cancel)
 
 		int i = 0;
 
-		for (i = 0; i < foodHolders.size(); i++)
-		{
-			foodHolders[i]->dropFood();
-		}
+		for (auto& fh: foodHolders) fh->dropFood();
 
 		dsq->continuity.lastMenuPage = currentMenuPage;
 		if(cancel && (optionsMenu || keyConfigMenu))
@@ -1600,16 +1537,9 @@ void Game::hideInGameMenu(bool effects, bool cancel)
 
 		menuIconGlow->alpha = 0;
 
-		for (i = 0; i < menu.size(); i++)
-		{
-			menu[i]->alpha = 0;
-			//menu[i]->alpha.interpolateTo(0, t*0.5f);
-			//menu[i]->scale.interpolateTo(Vector(0, 0), t);
-		}
-		for (i = 0; i < spellIcons.size(); i++)
-			spellIcons[i]->alpha.interpolateTo(0, t);
-		for (i = 0; i < songSlots.size(); i++)
-			songSlots[i]->alpha.interpolateTo(0, t);
+		for (auto& m: menu) m->alpha = 0;
+		for (auto& s: spellIcons) s->alpha.interpolateTo(0, t);
+		for (auto& s: songSlots) s->alpha.interpolateTo(0, t);
 		songBubbles->alpha.interpolateTo(0, t);
 
 		/*
@@ -1652,14 +1582,11 @@ void Game::hideInGameMenu(bool effects, bool cancel)
 		inGameMenu = false;
 		//toggleMiniMapRender(1);
 
-		for (int i = 0; i < songTips.size(); i++)
-			songTips[i]->alpha = 0;
+		for (auto& s: songTips) s->alpha = 0;
 
-
-
-		for (int i = 0; i < dropIngrNames.size(); i++)
+		for (auto& di: dropIngrNames)
 		{
-			dsq->game->spawnIngredient(dropIngrNames[i], avatar->position + Vector(0,-96), 1, 1);
+			dsq->game->spawnIngredient(di, avatar->position + Vector(0,-96), 1, 1);
 		}
 		dropIngrNames.clear();
 
@@ -1696,84 +1623,16 @@ void Game::hideInGameMenu(bool effects, bool cancel)
 	eYes->setHidden(true);
 	eNo->setHidden(true);
 	menuIconGlow->setHidden(true);
-	for (int i = 0; i < menu.size(); i++)
-		menu[i]->setHidden(true);
-	for (int i = 0; i < treasureSlots.size(); i++)
-		treasureSlots[i]->setHidden(true);
+	for (auto& m: menu) m->setHidden(true);
+	for (auto& ts: treasureSlots) ts->setHidden(true);
 	treasureDescription->setHidden(true);
-	for (int i = 0; i < foodSlots.size(); i++)
-		foodSlots[i]->setHidden(true);
+	for (auto& fs: foodSlots) fs->setHidden(true);
 }
 
 void Game::onLeftMouseButton()
 {
-	// hud button
-	/*
-	if (avatar && !avatar->isCharging())
-	{
 
-		if ((core->mouse.position - Vector(20, 20)).getSquaredLength2D() < sqr(40))
-		{
-			if (paused)
-				hideInGameMenu();
-			else
-				showInGameMenu();
-		}
-	}
-	*/
 }
-
-/*
-void Game::onActivate()
-{
-	if (!dsq->gui.isInteractionSelectorOpen() && avatar->isInputEnabled())
-	{
-		Element * e = dsq->getElementAtVector(dsq->cursor->position);
-		if (e)
-		{
-			// open a pop-up menu
-			// how?
-			// gui system
-			// embed menu control in all elements?
-				// if in all elements -> stupid, because you can only have on menu at once
-			elementWithMenu = e;
-			dsq->gui.openInteractionSelectorForElement(e);
-		}
-	}
-
-	if (dsq->gui.isInteractionSelectorOpen())
-	{
-		if (dsq->gui.menu.getSelectedEntry() > -1)
-		{
-			Interaction::Type type = elementWithMenu->interactions[dsq->gui.menu.getSelectedEntry()].getType();
-			dsq->gui.closeInteractionSelector();
-			// will crash sometime
-			elementWithMenu->interact(type, avatar);
-			elementWithMenu = 0;
-
-
-			avatar->enableInput();
-			//dsq->gui.menu.clearEntries();
-		}
-	}
-	else if (dsq->gui.isChoiceMenuOpen())
-	{
-		if (dsq->gui.choiceMenu.getSelectedEntry() > -1)
-		{
-			selectedChoice = dsq->gui.choiceMenu.getSelectedEntryName();
-			dsq->gui.closeChoiceMenu();
-			if (core->getNestedMains() > 1)
-			{
-				core->quitNestedMain();
-			}
-		}
-	}
-	else if(core->getNestedMains())
-	{
-		core->quitNestedMain();
-	}
-}
-*/
 
 void Game::spawnManaBall(Vector pos, float a)
 {
@@ -1783,31 +1642,7 @@ void Game::spawnManaBall(Vector pos, float a)
 
 void Game::refreshItemSlotIcons()
 {
-	/*
-	for (int i = 0; i < itemSlotIcons.size(); i++)
-	{
-		if (dsq->continuity.itemSlots[i] != -1)
-		{
-			itemSlotIcons[i]->setTexture(dsq->getItemTexture(dsq->continuity.itemSlots[i]));
-			int n = dsq->continuity.getNumberOf(dsq->continuity.itemSlots[i]);
-			if (n > 0)
-				itemSlotIcons[i]->alpha = 1;
-			else
-				itemSlotIcons[i]->alpha = 0;
-		}
-		else
-			itemSlotIcons[i]->alpha = 0;
-		itemSlotIcons[i]->setWidthHeight(32, 32);
 
-
-	}
-	*/
-	/*
-	if (n > 0)
-		itemSlotIcons[i]->alpha.interpolateTo(1,0.2);
-	else
-		itemSlotIcons[i]->alpha.interpolateTo(0,0.2);
-	*/
 }
 
 void Game::clearPointers()
@@ -1880,11 +1715,11 @@ void Game::transitionToScene(std::string scene)
 
 ElementTemplate *Game::getElementTemplateByIdx(int idx)
 {
-	for (int i = 0; i < elementTemplates.size(); i++)
+	for (auto& templ: elementTemplates)
 	{
-		if (elementTemplates[i].idx == idx)
+		if (templ.idx == idx)
 		{
-			return &elementTemplates[i];
+			return &templ;
 		}
 	}
 	return 0;
@@ -2031,25 +1866,25 @@ void Game::fillGridFromQuad(Quad *q, ObsType obsType, bool trim)
 			// obs now empty
 
 			int sides = 0;
-			for (int i = 0; i < obsCopy.size(); i++)
+			for (auto& i: obsCopy)
 			{
 				sides = 0;
-				for (int j = 0; j < obsCopy.size(); j++)
+				for (auto& j: obsCopy)
 				{
-					if (i != j)
+					if (&i != &j)
 					{
 						if (
-							(obsCopy[j].x == obsCopy[i].x-1 && obsCopy[j].y == obsCopy[i].y)
-						||	(obsCopy[j].x == obsCopy[i].x+1 && obsCopy[j].y == obsCopy[i].y)
-						||	(obsCopy[j].y == obsCopy[i].y-1 && obsCopy[j].x == obsCopy[i].x)
-						||	(obsCopy[j].y == obsCopy[i].y+1 && obsCopy[j].x == obsCopy[i].x)
+							(j.x == i.x-1 && j.y == i.y)
+						||	(j.x == i.x+1 && j.y == i.y)
+						||	(j.y == i.y-1 && j.x == i.x)
+						||	(j.y == i.y+1 && j.x == i.x)
 						)
 						{
 							sides++;
 						}
 						if (sides>=4)
 						{
-							obs.push_back(obsCopy[i]);
+							obs.push_back(i);
 							break;
 						}
 					}
@@ -2060,7 +1895,7 @@ void Game::fillGridFromQuad(Quad *q, ObsType obsType, bool trim)
 
 		glPushMatrix();
 
-		for (int i = 0; i < obs.size(); i++)
+		for (auto& i: obs)
 		{
 			glLoadIdentity();
 
@@ -2071,7 +1906,7 @@ void Game::fillGridFromQuad(Quad *q, ObsType obsType, bool trim)
 			}
 
 			//glTranslatef((obs[i].x-w2)*TILE_SIZE+TILE_SIZE/2, (obs[i].y-h2)*TILE_SIZE + TILE_SIZE/2, 0);
-			glTranslatef((obs[i].x-w2), (obs[i].y-h2), 0);
+			glTranslatef((i.x-w2), (i.y-h2), 0);
 
 			float m[16];
 			glGetFloatv(GL_MODELVIEW_MATRIX, m);
@@ -2144,13 +1979,11 @@ void Game::reconstructGrid(bool force)
 		e->fillGrid();
 	}
 
-	ObsRow *o;
-	for (i = 0; i < obsRows.size(); i++)
+	for (auto& o: obsRows)
 	{
-		o = &obsRows[i];
-		for (int tx = 0; tx < o->len; tx++)
+		for (int tx = 0; tx < o.len; tx++)
 		{
-			setGrid(TileVector(o->tx + tx, o->ty), OT_BLACK);
+			setGrid(TileVector(o.tx + tx, o.ty), OT_BLACK);
 		}
 	}
 
@@ -2347,14 +2180,14 @@ Vector Game::getWallNormal(Vector pos, int sampleArea, float *dist, int obs)
 		}
 	}
 	int sz = (TILE_SIZE*(sampleArea-1));
-	for (int i = 0; i < vs.size(); i++)
+	for (auto& i: vs)
 	{
-		float len = vs[i].getLength2D();
+		float len = i.getLength2D();
 		if (len < sz)
 		{
-			vs[i].setLength2D(sz - len);
+			i.setLength2D(sz - len);
 			c++;
-			avg += vs[i];
+			avg += i;
 		}
 	}
 	if (c)
@@ -2449,13 +2282,13 @@ void Game::removeIngredient(Ingredient *i)
 
 void Game::bindIngredients()
 {
-	for (Ingredients::iterator i = ingredients.begin(); i != ingredients.end(); ++ i)
+	for (auto& ing: ingredients)
 	{
-		Vector v = avatar->position - (*i)->position;
+		Vector v = avatar->position - ing->position;
 		if (!v.isLength2DIn(16))
 		{
 			v.setLength2D(500);
-			(*i)->vel += v;
+			ing->vel += v;
 		}
 	}
 }
@@ -2560,15 +2393,15 @@ void Game::loadEntityTypeList()
 
 EntityClass *Game::getEntityClassForEntityType(const std::string &type)
 {
-	for (int i = 0; i < entityTypeList.size(); i++)
+	for (auto& enttype: entityTypeList)
 	{
 	/*
 		std::ostringstream os;
-		os << "Comparing entityTypeList [" << entityTypeList[i].name << "] with type [" << type << "]";
+		os << "Comparing entityTypeList [" << enttype.name << "] with type [" << type << "]";
 		debugLog(os.str());
 		*/
-		if (nocasecmp(entityTypeList[i].name, type)==0)
-			return &entityTypeList[i];
+		if (nocasecmp(enttype.name, type)==0)
+			return &enttype;
 	}
 	return 0;
 }
@@ -2577,10 +2410,10 @@ int Game::getIdxForEntityType(std::string type)
 {
 	//if (!type.empty() && type[0] == '@')	return -1;
 
-	for (int i = 0; i < entityTypeList.size(); i++)
+	for (auto& enttype: entityTypeList)
 	{
-		if (nocasecmp(entityTypeList[i].name, type)==0)
-			return entityTypeList[i].idx;
+		if (nocasecmp(enttype.name, type)==0)
+			return enttype.idx;
 	}
 	return -1;
 }
@@ -2588,12 +2421,11 @@ int Game::getIdxForEntityType(std::string type)
 Entity *Game::createEntity(int idx, int id, Vector position, int rot, bool createSaveData, std::string name, EntityType et, bool doPostInit)
 {
 	std::string type;
-	for (int i = 0; i < dsq->game->entityTypeList.size(); i++)
+	for (auto& enttype: dsq->game->entityTypeList)
 	{
-		EntityClass *ec = &dsq->game->entityTypeList[i];
-		if (ec->idx == idx)
+		if (enttype.idx == idx)
 		{
-			type = ec->name;
+			type = enttype.name;
 			return createEntity(type, id, position, rot, createSaveData, name, et, doPostInit);
 		}
 	}
@@ -2620,12 +2452,12 @@ void Game::ensureLimit(Entity *e, int num, int state)
 	int numDelete = c-(num+1);
 	if (numDelete >= 0)
 	{
-		for (std::list<Entity*>::iterator i = entityList.begin(); i != entityList.end(); i++)
+		for (auto& ent: entityList)
 		{
 			if (state == 0)
-				(*i)->safeKill();
+				ent->safeKill();
 			else
-				(*i)->setState(state);
+				ent->setState(state);
 			numDelete--;
 			if (numDelete <= 0)
 				break;
@@ -2726,22 +2558,12 @@ void Game::initEntities()
 EntitySaveData *Game::getEntitySaveDataForEntity(Entity *e, Vector pos)
 {
 
-	for (int i = 0; i < entitySaveData.size(); i++)
+	for (auto& data: entitySaveData)
 	{
-		if (entitySaveData[i].e == e)
+		if (data.e == e)
 		{
-			return &entitySaveData[i];
+			return &data;
 		}
-		/*
-		if (entitySaveData[i].x == int(e->startPos.x) && entitySaveData[i].y == int(e->startPos.y))
-		{
-			if (entitySaveData[i].idx == e->entityTypeIdx)
-			{
-				debugLog("found entity");
-				return &entitySaveData[i];
-			}
-		}
-		*/
 	}
 	return 0;
 }
@@ -2840,37 +2662,6 @@ void Game::generateCollisionMask(Quad *q, float overrideCollideRadius /* = 0 */)
 		q->collisionMaskRadius = 512;
 
 		free(data);
-
-
-		/*
-		for (int i = 0; i < q->collisionMask.size(); i++)
-		{
-			float xsz = q->collisionMask[i].x;
-			float ysz = q->collisionMask[i].y;
-			if (xsz < 0)	xsz = -xsz;
-			if (ysz < 0)	ysz = -ysz;
-			if (xsz > q->collisionMaskRadius)
-				q->collisionMaskRadius = xsz;
-			if (ysz > q->collisionMaskRadius)
-				q->collisionMaskRadius = ysz;
-		}
-		q->collisionMaskRadius += TILE_SIZE/2;
-		*/
-		/*
-		if (w2 > h2)
-			q->collisionMaskRadius = w2*2;
-		else
-			q->collisionMaskRadius = h2*2;
-		*/
-		//q->collisionMaskRadius = sqrtf(sqr(w2)+sqr(h2));
-
-		/*
-		int rot = rotation.z;
-		while (rot > 360)
-			rot -= 360;
-		while (rot < 0)
-			rot += 360;
-		*/
 	}
 }
 
@@ -2937,11 +2728,8 @@ Path *Game::getPathAtCursor()
 
 Path *Game::getScriptedPathAtCursor(bool withAct)
 {
-	//int range = 64;
-	int sz = paths.size();
-	for (int i = 0; i < sz; i++)
+	for (auto& p: paths)
 	{
-		Path *p = (paths[i]);
 		if (!p->nodes.empty() && p->hasScript())
 		{
 			if (!withAct || p->cursorActivation)
@@ -2951,13 +2739,6 @@ Path *Game::getScriptedPathAtCursor(bool withAct)
 					return p;
 				}
 			}
-			/*
-			int dist = (p->nodes[0].position - dsq->getGameCursorPosition()).getSquaredLength2D();
-			if (dist < sqr(range))
-			{
-				return p;
-			}
-			*/
 		}
 	}
 	return 0;
@@ -2969,9 +2750,8 @@ Path *Game::getNearestPath(const Vector &pos, const std::string &s, const Path *
 	float smallestDist = HUGE_VALF;
 	std::string st = s;
 	stringToLower(st);
-	for (int i = 0; i < dsq->game->paths.size(); i++)
+	for (auto& cp: dsq->game->paths)
 	{
-		Path *cp = dsq->game->paths[i];
 		if (cp != ignore && !cp->nodes.empty() && (st.empty() || st == cp->label))
 		{
 			const Vector v = cp->nodes[0].position - pos;
@@ -3016,10 +2796,9 @@ Path *Game::getNearestPath(Path *p, std::string s)
 Path *Game::getPathByName(std::string name)
 {
 	stringToLowerUserData(name);
-	for (int i = 0; i < paths.size(); i++)
+	for (auto& p: paths)
 	{
-		if (paths[i]->label == name)
-			return paths[i];
+		if (p->label == name) return p;
 	}
 	return 0;
 }
@@ -3216,15 +2995,15 @@ void Game::sortFood()
 	if (dsq->continuity.foodSortType == FOODSORT_UNSORTED)
 	{
 		if (dsq->continuity.sortByUnsort.empty())
-			for (int i = 0; i < dsq->continuity.ingredients.size(); i++)
-				dsq->continuity.sortByUnsort.push_back(FoodSortOrder(IT_NONE, IET_NONE, dsq->continuity.ingredients[i].name));
+			for (auto& ing: dsq->continuity.ingredients)
+				dsq->continuity.sortByUnsort.push_back(FoodSortOrder(IT_NONE, IET_NONE, ing.name));
 	}
 	*/
 
 	std::vector<std::string> foodHolderNames;
 	foodHolderNames.resize(foodHolders.size());
 
-	for (int i = 0; i < foodHolders.size(); i++) {
+	for (unsigned i = 0; i < foodHolders.size(); i++) {
 		IngredientData *ing = foodHolders[i]->getIngredient();
 		if (ing) {
 			foodHolderNames[i] = ing->name;
@@ -3252,22 +3031,10 @@ void Game::sortFood()
 	dsq->sound->playSfx("menu-switch", 0.5);
 	dsq->spawnParticleEffect("menu-switch", worldLeftCenter, 0, 0, LR_HUD3, 1);
 
-	for (int i = 0; i < foodHolders.size(); i++) {
+	for (unsigned i = 0; i < foodHolders.size(); i++) {
 		if (!foodHolderNames[i].empty()) {
 			IngredientData *ing = dsq->continuity.getIngredientHeldByName(foodHolderNames[i]);
 			foodHolders[i]->setIngredient(ing, false);
-
-			//foodHolders[i]->setIngredient(dsq->continuity.getIngredientByName(foodHolderNames[i]));
-			/*
-			if (!foodHolders[i]->foodHolderIngredient) {
-				errorLog("not found");
-			}
-			else {
-				std::ostringstream os;
-				os << "get: " << foodHolders[i]->foodHolderIngredient->name;
-				errorLog(os.str());
-			}
-			*/
 		}
 	}
 }
@@ -3275,7 +3042,7 @@ void Game::sortFood()
 void Game::createInGameMenu()
 {
 	float menuz = 4;
-	int i = 0;
+	unsigned i = 0;
 
 
 	menuBg = new Quad;
@@ -3912,11 +3679,8 @@ void Game::createInGameMenu()
 	eNo->setDirMove(DIR_LEFT, eYes);
 	eYes->setDirMove(DIR_RIGHT, eNo);
 
-
-
 	menu.resize(10);
-	for (i = 0; i < menu.size(); i++)
-		menu[i] = new AquariaMenuItem;
+	for (auto& m: menu)	m = new AquariaMenuItem;
 
 	int ty = 530;
 	//menu[0]->setLabel("Continue");
@@ -3998,10 +3762,10 @@ void Game::createInGameMenu()
 	menu[9]->position = Vector(100,100);
 	*/
 
-	for (i = 0; i < menu.size(); i++)
+	for (auto& m: menu)
 	{
-		addRenderObject(menu[i], LR_MENU);
-		menu[i]->alpha = 0;
+		addRenderObject(m, LR_MENU);
+		m->alpha = 0;
 	}
 
 	((AquariaMenuItem*)menu[5])->setDirMove(DIR_DOWN, ((AquariaMenuItem*)menu[0]));
@@ -4013,8 +3777,6 @@ void Game::createInGameMenu()
 	((AquariaMenuItem*)menu[1])->setDirMove(DIR_UP, ((AquariaMenuItem*)menu[8]));
 
 	((AquariaMenuItem*)menu[4])->setDirMove(DIR_UP, ((AquariaMenuItem*)menu[6]));
-
-
 
 // ---------- FOOD MENU
 
@@ -5193,11 +4955,9 @@ void Game::findMaxCameraValues()
 	cameraMin.y = 20;
 	cameraMax.x = -1;
 	cameraMax.y = -1;
-	int i = 0;
-	for (i = 0; i < obsRows.size(); i++)
+	for (auto& r: obsRows)
 	{
-		ObsRow *r = &obsRows[i];
-		TileVector t(r->tx + r->len, r->ty);
+		TileVector t(r.tx + r.len, r.ty);
 		Vector v = t.worldVector();
 		if (v.x > cameraMax.x)
 		{
@@ -5281,13 +5041,16 @@ bool Game::loadScene(std::string scene)
 	}
 
 #ifdef AQUARIA_DEMO
-	int i = 0;
-	for (; i < allowedMaps.size(); i++)
+	bool mapFound = false;
+	for (auto& map: allowedMaps)
 	{
-		if (allowedMaps[i] == scene)
+		if (map == scene)
+		{
+			mapFound = true;
 			break;
+		}
 	}
-	if (i == allowedMaps.size())
+	if (!mapFound)
 	{
 		exit_error("Demo version refuses to load this map, sorry.");
 	}
@@ -5387,9 +5150,9 @@ bool Game::saveScene(std::string scene)
 
 	std::ostringstream obs;
 	int i = 0;
-	for (i = 0; i < obsRows.size(); i++)
+	for (auto& row: obsRows)
 	{
-		obs << obsRows[i].tx << " " << obsRows[i].ty << " " << obsRows[i].len << " ";
+		obs << row.tx << " " << row.ty << " " << row.len << " ";
 	}
 	XMLElement *obsXml = saveFile.NewElement("Obs");
 	obsXml->SetAttribute("d", obs.str().c_str());
@@ -5421,9 +5184,8 @@ bool Game::saveScene(std::string scene)
 		saveFile.InsertEndChild(pathXml);
 	}
 
-	for (i = 0; i < dsq->game->warpAreas.size(); i++)
+	for (auto& a: dsq->game->warpAreas)
 	{
-		WarpArea a = dsq->game->warpAreas[i];
 		XMLElement *waSF = saveFile.NewElement("WarpArea");
 		waSF->SetAttribute("x", a.position.x);
 		waSF->SetAttribute("y", a.position.y);
@@ -5478,20 +5240,19 @@ bool Game::saveScene(std::string scene)
 		XMLElement *entitiesNode = saveFile.NewElement("Entities");
 
 		std::ostringstream os;
-		for (int i = 0; i < dsq->game->entitySaveData.size(); i++)
+		for (auto& e: dsq->game->entitySaveData)
 		{
-			EntitySaveData *e = &dsq->game->entitySaveData[i];
-			os << e->idx << " ";
+			os << e.idx << " ";
 
-			if (e->idx == -1)
+			if (e.idx == -1)
 			{
-				if (!e->name.empty())
-					os << e->name << " ";
+				if (!e.name.empty())
+					os << e.name << " ";
 				else
 					os << "INVALID" << " ";
 			}
 			// group ID no longer used
-			os << e->x << " " << e->y << " " << e->rot << " " << 0 << " " << e->id << " ";
+			os << e.x << " " << e.y << " " << e.rot << " " << 0 << " " << e.id << " ";
 		}
 		entitiesNode->SetAttribute("j", os.str().c_str());
 		saveFile.InsertEndChild(entitiesNode);
@@ -5514,9 +5275,9 @@ bool Game::saveScene(std::string scene)
 
 	// HACK: fix this later (won't save light shafts)
 	/*
-	for (Core::RenderObjects::iterator i = core->renderObjects.begin(); i != core->renderObjects.end(); i++)
+	for (auto& obj: core->renderObjects)
 	{
-		LightShaft *l = dynamic_cast<LightShaft*>(*i);
+		LightShaft *l = dynamic_cast<LightShaft*>(obj);
 		if (l)
 		{
 			XMLElement *lightShaft = saveFile.NewElement("LightShaft");
@@ -5606,20 +5367,20 @@ bool Game::isValidTarget(Entity *e, Entity *me)
 void Game::updateMiniMapHintPosition()
 {
 	miniMapHintPosition = Vector(0,0,0);
-	for (int i = 0; i < warpAreas.size(); i++)
+	for (auto& a: warpAreas)
 	{
 		if (this->sceneName == miniMapHint.scene)
 		{
-			if (warpAreas[i].warpAreaType == miniMapHint.warpAreaType)
+			if (a.warpAreaType == miniMapHint.warpAreaType)
 			{
-				miniMapHintPosition = warpAreas[i].position;
+				miniMapHintPosition = a.position;
 			}
 		}
 		else
 		{
-			if (warpAreas[i].sceneName == miniMapHint.scene)
+			if (a.sceneName == miniMapHint.scene)
 			{
-				miniMapHintPosition = warpAreas[i].position;
+				miniMapHintPosition = a.position;
 			}
 		}
 	}
@@ -5940,12 +5701,11 @@ float Game::getHalfTimer(float mod)
 
 void Game::action(int id, int state)
 {
-	for (int i = 0; i < paths.size(); i++)
+	for (auto& p: paths)
 	{
-		if (paths[i]->catchActions)
+		if (p->catchActions)
 		{
-			if (!paths[i]->action(id, state))
-				break;
+			if (!p->action(id, state)) break;
 		}
 	}
 
@@ -6048,11 +5808,11 @@ void Game::action(int id, int state)
 					}
 					else
 					{
-						for (int i = 0; i < foodHolders.size(); i++)
+						for (auto& holder: foodHolders)
 						{
-							if (!foodHolders[i]->isTrash() && !foodHolders[i]->isEmpty())
+							if (!holder->isTrash() && !holder->isEmpty())
 							{
-								foodHolders[i]->dropFood();
+								holder->dropFood();
 								break;
 							}
 						}
@@ -6066,11 +5826,11 @@ void Game::action(int id, int state)
 					}
 					else
 					{
-						for (int i = 0; i < foodSlots.size(); i++)
+						for (auto& slot: foodSlots)
 						{
-							if (foodSlots[i]->isCursorIn() && foodSlots[i]->getIngredient())
+							if (slot->isCursorIn() && slot->getIngredient())
 							{
-								foodSlots[i]->moveRight();
+								slot->moveRight();
 								break;
 							}
 						}
@@ -6084,30 +5844,27 @@ void Game::action(int id, int state)
 					}
 					else
 					{
-						int trashIndex = -1;
-						for (int i = 0; i < foodHolders.size(); i++)
+						bool trashFound = false;
+						for (auto& holder: foodHolders)
 						{
-							if (foodHolders[i]->isValid() && foodHolders[i]->isTrash())
+							if (holder->isValid() && holder->isTrash())
 							{
-								trashIndex = i;
+								trashFound = true;
 								break;
 							}
 						}
-						if (trashIndex >= 0)
+						if (trashFound)
 						{
-							int ingrIndex = -1;
-							for (int i = 0; i < foodSlots.size(); i++)
+							FoodSlot* slotFound = NULL;
+							for (auto& slot: foodSlots)
 							{
-								if (foodSlots[i]->isCursorIn() && foodSlots[i]->getIngredient())
+								if (slot->isCursorIn() && slot->getIngredient())
 								{
-									ingrIndex = i;
+									slotFound = slot;
 									break;
 								}
 							}
-							if (ingrIndex >= 0)
-							{
-								foodSlots[ingrIndex]->discard();
-							}
+							if (slotFound) slotFound->discard();
 						}
 					}
 				}
@@ -6507,18 +6264,17 @@ void Game::applyState()
 
 	if (!warpAreaType.empty())
 	{
-		for (int i = 0; i < warpAreas.size(); i++)
+		for (auto& a: warpAreas)
 		{
-			WarpArea *a = &warpAreas[i];
-			if (a->warpAreaType == warpAreaType)
+			if (a.warpAreaType == warpAreaType)
 			{
 				int extra=96;
-				if (a->radius)
-					avatar->position = a->position + (spawnOffset*(a->radius+extra));
+				if (a.radius)
+					avatar->position = a.position + (spawnOffset*(a.radius+extra));
 				else
 				{
-					Vector s(spawnOffset.x*(a->w+extra), spawnOffset.y*(a->h+extra));
-					avatar->position = a->position + s;
+					Vector s(spawnOffset.x*(a.w+extra), spawnOffset.y*(a.h+extra));
+					avatar->position = a.position + s;
 				}
 				break;
 			}
@@ -7038,9 +6794,8 @@ void Game::bindInput()
 bool ingType(const std::vector<IngredientData*> &list, IngredientType type, int amount=1)
 {
 	int c = 0;
-	for (int i = 0; i < list.size(); i++)
+	for (auto& data: list)
 	{
-		IngredientData *data = list[i];
 		if ((data->marked < data->held) && (data->type == type || type == IT_ANYTHING))
 		{
 			if (type != IT_ANYTHING)
@@ -7056,9 +6811,8 @@ bool ingType(const std::vector<IngredientData*> &list, IngredientType type, int 
 bool ingName(const std::vector<IngredientData*> &list, const std::string &name, int amount=1)
 {
 	int c = 0;
-	for (int i = 0; i < list.size(); i++)
+	for (auto& data: list)
 	{
-		IngredientData *data = list[i];
 		if ((data->marked < data->held) && (nocasecmp(data->name, name)==0))//data->name == name)
 		{
 			data->marked++;
@@ -7198,12 +6952,12 @@ Recipe *Game::findRecipe(const std::vector<IngredientData*> &list)
 	Recipe *r = 0;
 	Recipe *tr = 0;
 	int q = 0, q2 = 0;
-	for ( rc = 0; rc < dsq->continuity.recipes.size(); rc++)
+	for (auto& rc: dsq->continuity.recipes)
 	{
-		for (int i = 0; i < list.size(); i++) list[i]->marked = 0;
+		for (auto& i: list) i->marked = 0;
 
 		tr = 0;
-		r = &dsq->continuity.recipes[rc];
+		r = &rc;
 		tr = r;
 		q = 0;
 
@@ -7212,23 +6966,14 @@ Recipe *Game::findRecipe(const std::vector<IngredientData*> &list)
 
 		// get the amount of ingredients required
 		int recipeAmount = 0;
+		for (auto& t: r->types) recipeAmount += t.amount;
+		for (auto& n: r->names) recipeAmount += n.amount;
+		if (listAmount != recipeAmount)	continue;
 
-		for (int i = 0; i < r->types.size(); i++)
-			recipeAmount += r->types[i].amount;
-
-		for (int i = 0; i < r->names.size(); i++)
-			recipeAmount += r->names[i].amount;
-
-		if (listAmount != recipeAmount)
-			continue;
-
-		for (int c = 0; c < r->types.size(); c++)
+		for (auto& t: r->types)
 		{
-			RecipeType *t = &r->types[c];
-			if (ingType(list, t->type, t->amount))
-				q++;
-			else
-				break;
+			if (ingType(list, t.type, t.amount)) q++;
+			else break;
 		}
 
 		/*
@@ -7245,13 +6990,10 @@ Recipe *Game::findRecipe(const std::vector<IngredientData*> &list)
 		if (q == r->types.size())
 		{
 			q2 = 0;
-			for (int c = 0; c < r->names.size(); c++)
+			for (auto& n: r->names)
 			{
-				RecipeName *n = &r->names[c];
-				if (ingName(list, n->name, n->amount))
-					q2++;
-				else
-					break;
+				if (ingName(list, n.name, n.amount)) q2++;
+				else break;
 			}
 			if (q2 == r->names.size())
 			{
@@ -7273,7 +7015,7 @@ Recipe *Game::findRecipe(const std::vector<IngredientData*> &list)
 		}
 	}
 
-	for (int i = 0; i < list.size(); i++) list[i]->marked = 0;
+	for (auto& i: list) i->marked = 0;
 
 	if (rc == dsq->continuity.recipes.size())
 	{
@@ -7292,10 +7034,10 @@ Recipe *Game::findRecipe(const std::vector<IngredientData*> &list)
 void Game::updateCookList()
 {
 	cookList.clear();
-	for (int i = 0; i < foodHolders.size(); i++)
+	for (auto& holder: foodHolders)
 	{
-		IngredientData *ing = foodHolders[i]->getIngredient();
-		if (!foodHolders[i]->isTrash() && ing)
+		IngredientData *ing = holder->getIngredient();
+		if (!holder->isTrash() && ing)
 		{
 			std::ostringstream os;
 			os << "cooklist: " << ing->name;
@@ -7450,22 +7192,20 @@ void Game::onCook()
 
 		dsq->sound->playSfx("boil");
 
-		for (int i = 0; i < foodHolders.size(); i++)
+		for (auto& holder: foodHolders)
 		{
-			if (!foodHolders[i]->isEmpty())
-				dsq->spawnParticleEffect("cook-ingredient", foodHolders[i]->getWorldPosition(), 0, 0, LR_HUD3, 1);
+			if (holder->isEmpty())
+				dsq->spawnParticleEffect("cook-ingredient", holder->getWorldPosition(), 0, 0, LR_HUD3, 1);
 		}
 
-		if (longAnim)
-			dsq->main(0.5);
-		else
-			dsq->main(0.2);
+		if (longAnim) dsq->main(0.5);
+		else dsq->main(0.2);
 
 		bool haveLeftovers = true;
-		for (int i = 0; i < foodHolders.size(); i++)
+		for (auto& holder: foodHolders)
 		{
-			if (!foodHolders[i]->isEmpty()) {
-				IngredientData *ing = foodHolders[i]->getIngredient();
+			if (!holder->isEmpty()) {
+				IngredientData *ing = holder->getIngredient();
 				if (!ing || ing->amount < ing->held)
 				{
 					haveLeftovers = false;
@@ -7473,25 +7213,18 @@ void Game::onCook()
 				}
 			}
 		}
-		for (int i = 0; i < foodHolders.size(); i++)
+		for (auto& holder: foodHolders)
 		{
-			IngredientData *ing = foodHolders[i]->getIngredient();
-			if (ing)
-			{
-				ing->amount--;
-			}
-
-			if (!haveLeftovers)
-			{
-				foodHolders[i]->setIngredient(0, false);
-			}
+			IngredientData *ing = holder->getIngredient();
+			if (ing) ing->amount--;
+			if (!haveLeftovers) holder->setIngredient(0, false);
 		}
 
 		dsq->sound->playSfx("Cook");
 
-		for (int i = 0; i < foodHolders.size(); i++)
-			if (foodHolders[i]->isValid() && !foodHolders[i]->isTrash())
-				foodHolders[i]->animateLid(false);
+		for (auto& holder: foodHolders)
+			if (holder->isValid() && !holder->isTrash())
+				holder->animateLid(false);
 
 		dsq->spawnParticleEffect("cook-food", Vector(575,250), 0, 0, LR_HUD3, 1);
 
@@ -7566,11 +7299,11 @@ void Game::overrideZoom(float sz, float t)
 
 FoodSlot* getFoodSlotFromIndex()
 {
-	for (int i = 0; i < dsq->game->foodSlots.size(); i++)
+	for (auto& fs: dsq->game->foodSlots)
 	{
-		if (dsq->game->foodSlots[i]->slot == FoodSlot::foodSlotIndex)
+		if (fs->slot == FoodSlot::foodSlotIndex)
 		{
-			return dsq->game->foodSlots[i];
+			return fs;
 		}
 	}
 	return 0;
@@ -7606,10 +7339,7 @@ void Game::clearControlHint()
 			controlHint_image->alpha.interpolateTo(0, hintTransTime);
 		}
 
-		for (int i = 0; i < controlHintNotes.size(); i++)
-		{
-			controlHintNotes[i]->alpha.interpolateTo(0, hintTransTime);
-		}
+		for (auto& note: controlHintNotes) note->alpha.interpolateTo(0, hintTransTime);
 		controlHintNotes.clear();
 	}
 }
@@ -7670,7 +7400,7 @@ void Game::setControlHint(const std::string &h, bool left, bool right, bool midd
 
 		p += Vector(100, 0);
 
-		for (int i = 0; i < song->notes.size(); i++)
+		for (unsigned i = 0; i < song->notes.size(); i++)
 		{
 			int note = song->notes[i];
 
@@ -7757,13 +7487,8 @@ void Game::setControlHint(const std::string &h, bool left, bool right, bool midd
 		controlHint_mouseBody->alpha.interpolateTo(0.5, hintTransTime);
 	}
 
-	for (int i = 0; i < controlHintNotes.size(); i++)
-	{
-		controlHintNotes[i]->alpha.interpolateTo(alphaOn, hintTransTime);
-	}
-
+	for (auto& note: controlHintNotes) note->alpha.interpolateTo(alphaOn, hintTransTime);
 	controlHint_ignoreClear = ignoreClear;
-
 
 	controlHint_shine->alpha.ensureData();
 	controlHint_shine->alpha.data->path.clear();
@@ -8305,9 +8030,8 @@ Bone *Game::collideSkeletalVsLine(Entity *skeletal, Vector start, Vector end, fl
 {
 	//float smallestDist = HUGE_VALF;
 	Bone *closest = 0;
-	for (int i = 0; i < skeletal->skeletalSprite.bones.size(); i++)
+	for (auto& b: skeletal->skeletalSprite.bones)
 	{
-		Bone *b = skeletal->skeletalSprite.bones[i];
 		/*
 		int checkRadius = sqr(radius+b->collisionMaskRadius);
 		Vector bonePos = b->getWorldCollidePosition();
@@ -8317,9 +8041,9 @@ Bone *Game::collideSkeletalVsLine(Entity *skeletal, Vector start, Vector end, fl
 		// MULTIPLE CIRCLES METHOD
 		if (!b->collisionMask.empty() && b->alpha.x == 1 && b->renderQuad)
 		{
-			for (int i = 0; i < b->transformedCollisionMask.size(); i++)
+			for (auto& mask: b->transformedCollisionMask)
 			{
-				if (isTouchingLine(start, end, b->transformedCollisionMask[i], radius+b->collideRadius))
+				if (isTouchingLine(start, end, mask, radius+b->collideRadius))
 				{
 					closest = b;
 					//smallestDist = dist;
@@ -8384,10 +8108,8 @@ Bone *Game::collideSkeletalVsCircle(Entity *skeletal, Vector pos, float radius)
 	float smallestDist = HUGE_VALF;
 	Bone *closest = 0;
 	if (!(pos - skeletal->position).isLength2DIn(2000)) return 0;
-	for (int i = 0; i < skeletal->skeletalSprite.bones.size(); i++)
+	for (auto& b: skeletal->skeletalSprite.bones)
 	{
-		Bone *b = skeletal->skeletalSprite.bones[i];
-
 		if (b->alpha.x == 1 && b->renderQuad &&
 			(!b->collisionMask.empty() || b->collideRadius) // check this here to avoid calculating getWorldCollidePosition() if not necessary
 		)
@@ -8400,7 +8122,7 @@ Bone *Game::collideSkeletalVsCircle(Entity *skeletal, Vector pos, float radius)
 			{
 				if (dist < checkRadius)
 				{
-					for (int i = 0; i < b->transformedCollisionMask.size(); i++)
+					for (unsigned i = 0; i < b->transformedCollisionMask.size(); i++)
 					{
 						if ((b->transformedCollisionMask[i] - pos).isLength2DIn(radius+b->collideRadius*skeletal->scale.x))
 						{
@@ -8483,13 +8205,9 @@ bool Game::isEntityCollideWithShot(Entity *e, Shot *shot)
 	{
 		if (shot->getDamageType() == DT_AVATAR_BITE)
 		{
-			Avatar::BittenEntities::iterator i;
-			for (i = avatar->bittenEntities.begin(); i != avatar->bittenEntities.end(); i++)
+			for (auto& ent: avatar->bittenEntities)
 			{
-				if (e == (*i))
-				{
-					return false;
-				}
+				if (e == ent) return false;
 			}
 			return true;
 		}
@@ -8836,18 +8554,12 @@ void Game::onOptionsCancel()
 
 void Game::refreshFoodSlots(bool effects)
 {
-	for (int i = 0; i < foodSlots.size(); i++)
-	{
-		foodSlots[i]->refresh(effects);
-	}
+	for (auto& slot: foodSlots) slot->refresh(effects);
 }
 
 void Game::refreshTreasureSlots()
 {
-	for (int i = 0; i < treasureSlots.size(); i++)
-	{
-		treasureSlots[i]->refresh();
-	}
+	for (auto& slot: treasureSlots) slot->refresh();
 }
 
 void Game::togglePetMenu(bool f)
@@ -8869,30 +8581,11 @@ void Game::togglePetMenu(bool f)
 		toggleMainMenu(false);
 
 		bool hasPet = false;
-		for (int i = 0; i < petSlots.size(); i++)
+		for (auto& slot: petSlots)
 		{
-			petSlots[i]->alpha = 1;
-			bool has = dsq->continuity.getFlag(petSlots[i]->petFlag);
-			if (has)
-			{
-				hasPet = true;
-				/*
-				for (int j = 0; j < petSlots.size(); j++)
-				{
-					if (j != i)
-					{
-						bool has = dsq->continuity.getFlag(petSlots[j]->petFlag);
-						if (has)
-						{
-							if (i == 0 && j == 1)
-							{
-
-							}
-						}
-					}
-				}
-				*/
-			}
+			slot->alpha = 1;
+			bool has = dsq->continuity.getFlag(slot->petFlag);
+			if (has) hasPet = true;
 		}
 		// act as if they're all active for now...
 		if (petSlots.size() == 4)
@@ -8921,45 +8614,18 @@ void Game::togglePetMenu(bool f)
 			petSlots[3]->setDirMove(DIR_DOWN, petSlots[0]);
 		}
 
-
-		for (int i = 0; i < petTips.size(); i++)
-		{
-			/*
-			if (hasPet && i == 0)
-			{
-				petTips[i]->alpha = 0;
-			}
-			else if (!hasPet && i == 1)
-				petTips[i]->alpha = 0;
-			else
-				petTips[i]->alpha = 1;
-			*/
-			petTips[i]->alpha = 1;
-		}
+		for (auto& tip: petTips) tip->alpha = 1;
 
 		liCrystal->alpha = 1;
-
-
 		menu[7]->setFocus(true);
-
-
 		doMenuSectionHighlight(2);
-
 	}
 	else if (!f && petMenu)
 	{
-		for (int i = 0; i < petSlots.size(); i++)
-		{
-			petSlots[i]->alpha = 0;
-		}
-
-		for (int i = 0; i < petTips.size(); i++)
-		{
-			petTips[i]->alpha = 0;
-		}
+		for (auto& slot: petSlots) slot->alpha = 0;
+		for (auto& tip: petTips) tip->alpha = 0;
 
 		liCrystal->alpha = 0;
-
 
 		menu[5]->setDirMove(DIR_LEFT, 0);
 		menu[5]->setDirMove(DIR_UP, 0);
@@ -8990,8 +8656,7 @@ void Game::toggleTreasureMenu(bool f)
 
 		refreshTreasureSlots();
 
-		for (int i = 0; i < treasureTips.size(); i++)
-			treasureTips[i]->alpha = 1;
+		for (auto& tip: treasureTips) tip->alpha = 1;
 
 		if (treasureSlots.size() > 8)
 		{
@@ -9016,23 +8681,19 @@ void Game::toggleTreasureMenu(bool f)
 	{
 		treasureMenu = false;
 
-		for (int i = 0; i < treasureTips.size(); i++)
-			treasureTips[i]->alpha = 0;
+		for (auto& tip: treasureTips) tip->alpha = 0;
 
 		menu[0]->setDirMove(DIR_UP, 0);
 		menu[5]->setDirMove(DIR_LEFT, 0);
 
 		liCrystal->alpha = 0;
-
 		circlePageNum->alpha = 0;
 	}
 
-	for (int i = 0; i < treasureSlots.size(); i++)
+	for (auto& slot: treasureSlots)
 	{
-		if (f)
-			treasureSlots[i]->alpha = 1;
-		else
-			treasureSlots[i]->alpha = 0;
+		if (f) slot->alpha = 1;
+		else slot->alpha = 0;
 	}
 
 	if (f)
@@ -9071,11 +8732,7 @@ void Game::toggleFoodMenu(bool f)
 	if (treasureMenu)
 		toggleTreasureMenu(false);
 
-
-	for (int i = 0; i < foodHolders.size(); i++)
-	{
-		foodHolders[i]->toggleValid(f);
-	}
+	for (auto& holder: foodHolders) holder->toggleValid(f);
 
 	if (f)
 	{
@@ -9116,8 +8773,7 @@ void Game::toggleFoodMenu(bool f)
 
 		foodSort->alpha = 1;
 
-		for (int i = 0; i < foodTips.size(); i++)
-			foodTips[i]->alpha = 1;
+		for (auto& tip: foodTips) tip->alpha = 1;
 
 		if (foodSlots.size() >= 16)
 		{
@@ -9168,8 +8824,7 @@ void Game::toggleFoodMenu(bool f)
 
 		liCrystal->alpha = 0;
 
-		for (int i = 0; i < foodTips.size(); i++)
-			foodTips[i]->alpha = 0;
+		for (auto& tip: foodTips) tip->alpha = 0;
 
 		menu[5]->setDirMove(DIR_LEFT, 0);
 
@@ -9178,10 +8833,7 @@ void Game::toggleFoodMenu(bool f)
 		previewRecipe->alpha = 0;
 	}
 
-	for (int i = 0; i < foodSlots.size(); i++)
-	{
-		foodSlots[i]->toggle(f);
-	}
+	for (auto& slot: foodSlots) slot->toggle(f);
 }
 
 void Game::doMenuSectionHighlight(int section)
@@ -9205,22 +8857,16 @@ void Game::toggleMainMenu(bool f)
 	if (f)
 	{
 		currentMenuPage = MENUPAGE_SONGS;
-		for (int i = 0; i < songSlots.size(); i++)
-		{
-			//songSlots[i]->alpha.interpolateTo(1, t);
-			songSlots[i]->alphaMod = 1;
-		}
+		for (auto& slot: songSlots) slot->alphaMod = 1;
 		songBubbles->alpha.interpolateTo(1,t);
 		energyIdol->alpha.interpolateTo(1,t);
 		liCrystal->alpha.interpolateTo(1, t);
-		for (int i = 0; i < songTips.size(); i++)
-			songTips[i]->alpha = 1;
+		for (auto& tip: songTips) tip->alpha = 1;
 		menuBg2->alpha.interpolateTo(1, t);
-
 
 		int sm=-900;
 		SongSlot *ss=0;
-		for (int i = 0; i < songSlots.size(); i++)
+		for (unsigned i = 0; i < songSlots.size(); i++)
 		{
 			if (dsq->continuity.hasSong(dsq->continuity.getSongTypeBySlot(i)))
 			{
@@ -9248,13 +8894,8 @@ void Game::toggleMainMenu(bool f)
 	{
 		((AquariaMenuItem*)menu[5])->setDirMove(DIR_LEFT, 0);
 
-		for (int i = 0; i < songSlots.size(); i++)
-		{
-			songSlots[i]->alphaMod = 0;
-		}
-
-		for (int i = 0; i < songTips.size(); i++)
-			songTips[i]->alpha = 0;
+		for (auto& slot: songSlots) slot->alphaMod = 0;
+		for (auto& tip: songTips) tip->alpha = 0;
 
 		songBubbles->alpha.interpolateTo(0, t);
 		energyIdol->alpha.interpolateTo(0,t);
@@ -9427,10 +9068,7 @@ void Game::toggleOptionsMenu(bool f, bool skipBackup, bool isKeyConfig)
 
 		menuIconGlow->alpha = 0;
 
-		/*
-		for (int i = 0; i < menu.size(); i++)
-			menu[i]->alpha.interpolateTo(0, 0.2);
-		*/
+		//for (auto& m: menu) m->alpha.interpolateTo(0, 0.2);
 	}
 	else if (!f && optionsMenu)
 	{
@@ -10092,9 +9730,9 @@ void Game::update(float dt)
 
 		//avatar->vel.getLength2D()
 		/*
-		for (Shot::Shots::iterator i = Shot::shots.begin(); i != Shot::shots.end(); i++)
+		for (auto& shot: Shot::shots)
 		{
-			Emitter::addInfluence(ParticleInfluence((*i)->position, 400, 128, true));
+			Emitter::addInfluence(ParticleInfluence(shot->position, 400, 128, true));
 		}
 		*/
 		/*
@@ -10123,12 +9761,7 @@ void Game::update(float dt)
 
 	StateObject::update(dt);
 
-
-	for (ElementUpdateList::iterator e = elementUpdateList.begin(); e != elementUpdateList.end(); e++)
-	{
-		(*e)->update(dt);
-	}
-
+	for (auto& el: elementUpdateList) el->update(dt);
 
 	int i = 0;
 	for (i = 0; i < dsq->game->getNumPaths(); i++)
@@ -10646,14 +10279,11 @@ void Game::loadElementTemplates(std::string pack)
 	}
 	in.close();
 
-	for (int i = 0; i < elementTemplates.size(); i++)
+	for (auto& i: elementTemplates)
 	{
-		for (int j = i; j < elementTemplates.size(); j++)
+		for (auto& j: elementTemplates)
 		{
-			if (elementTemplates[i].idx > elementTemplates[j].idx)
-			{
-				std::swap(elementTemplates[i], elementTemplates[j]);
-			}
+			if (i.idx > j.idx) std::swap(i, j);
 		}
 	}
 	for (int i = 0; i < 27; i++)
@@ -10677,7 +10307,7 @@ void Game::resetFromTitle()
 
 void Game::setGrid(ElementTemplate *et, Vector position, float rot360)
 {
-	for (int i = 0; i < et->grid.size(); i++)
+	for (auto& pt: et->grid)
 	{
 		TileVector t(position);
 		/*
@@ -10685,8 +10315,8 @@ void Game::setGrid(ElementTemplate *et, Vector position, float rot360)
 		os << "opos(" << position.x << ", " << position.y << ") centre(" << t.x << ", " << t.y << ")";
 		debugLog(os.str());
 		*/
-		int x = et->grid[i].x;
-		int y = et->grid[i].y;
+		int x = pt.x;
+		int y = pt.y;
 		if (rot360 >= 0 && rot360 < 90)
 		{
 		}
@@ -10710,7 +10340,7 @@ void Game::setGrid(ElementTemplate *et, Vector position, float rot360)
 			y = -y;
 		}
 		TileVector s(t.x+x, t.y+y);
-		//Vector v = Vector(position.x+et->grid[i].x*TILE_SIZE, position.y+et->grid[i].y*TILE_SIZE);
+		//Vector v = Vector(position.x+pt.x*TILE_SIZE, position.y+et->grid[i].y*TILE_SIZE);
 		setGrid(s, OT_INVISIBLE);
 	}
 }
@@ -10852,18 +10482,15 @@ void Game::removeState()
 	// optimize:: clear layers
 	/*
 	int c = 0;
-	for (DSQ::RenderObjectLayers::iterator i = core->renderObjectLayers.begin(); i != core->renderObjectLayers.end(); i++)
+	for (auto& layer: core->renderObjectLayers)
 	{
-		DSQ::RenderObjects *r = &(*i);
 		//if (c <= LR_HUD)
-		if (c<=LR_PARTICLES)
-			r->clear();
+		if (c <= LR_PARTICLES) layer.clear();
 		c++;
 	}
 	*/
 
 	clearObsRows();
-
 
 	debugLog("killAllShots");
 	Shot::killAllShots();

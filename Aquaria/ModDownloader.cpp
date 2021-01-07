@@ -50,11 +50,10 @@ static ModIconOnline *_FindModIconOnline(const std::string& n, bool (*func)(ModI
 	if(!grid)
 		return NULL;
 
-	for(RenderObject::Children::iterator it = grid->children.begin(); it != grid->children.end(); ++it)
+	for(auto& child: grid->children)
 	{
-		ModIconOnline *ico = dynamic_cast<ModIconOnline*>(*it);
-		if(ico && func(ico, n))
-			return ico;
+		ModIconOnline *ico = dynamic_cast<ModIconOnline*>(child);
+		if(ico && func(ico, n)) return ico;
 	}
 	return NULL;
 }

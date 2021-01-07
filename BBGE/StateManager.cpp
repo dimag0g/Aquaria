@@ -72,10 +72,10 @@ StateData::StateData()
 StateData::~StateData()
 {
 
-	for (int i = 0; i < renderObjects.size(); i++)
+	for (auto& r: renderObjects)
 	{
-		removeRenderObject (renderObjects[i]);
-		delete renderObjects[i];
+		removeRenderObject(r);
+		delete r;
 	}
 }
 
@@ -96,7 +96,7 @@ void StateData::removeRenderObject(RenderObject *renderObject)
 
 void StateData::removeRenderObjectFromList(RenderObject *renderObject)
 {
-	for (std::vector<RenderObject*>::iterator i = renderObjects.begin(); i != renderObjects.end(); )
+	for (auto i = renderObjects.begin(); i != renderObjects.end(); )
 	{
 		if ((*i) == renderObject)
 		{
@@ -115,12 +115,11 @@ void StateData::eraseRenderObjects()
 	// why clear garbage here?
 	//core->clearGarbage();
 
-	for (int i = 0; i < renderObjects.size(); i++)
+	for (auto& r: renderObjects)
 	{
-		RenderObject *r = renderObjects[i];
 		if (r && !r->isDead())
 		{
-			core->enqueueRenderObjectDeletion(renderObjects[i]);
+			core->enqueueRenderObjectDeletion(r);
 		}
 	}
 	renderObjects.clear();
@@ -278,11 +277,7 @@ StateObject *StateManager::addStateInstance(StateObject *s)
 
 void StateManager::clearStateInstances()
 {
-	for (int i = 0; i < stateInstances.size(); i++)
-	{
-		StateObject *obj = stateInstances[i];
-		delete obj;
-	}
+	for (auto& obj: stateInstances) delete obj;
 	stateInstances.clear();
 }
 

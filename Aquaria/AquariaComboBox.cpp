@@ -254,19 +254,19 @@ void AquariaComboBox::close(float t)
 
 	isopen = false;
 
-	for (int i = 0; i < shownItems.size(); i++)
+	for(auto& item: shownItems)
 	{
-		shownItems[i]->alpha.interpolateTo(0, t);
+		item->alpha.interpolateTo(0, t);
 	}
 
 	if (t>0)
 		dsq->main(t);
 
-	for(int i = 0; i < shownItems.size(); i++)
+	for(auto& item: shownItems)
 	{
-		removeChild(shownItems[i]);
-		shownItems[i]->destroy();
-		delete shownItems[i];
+		removeChild(item);
+		item->destroy();
+		delete item;
 	}
 
 	scrollBtnDown->alpha.interpolateTo(0, t);
@@ -277,7 +277,7 @@ void AquariaComboBox::close(float t)
 
 bool AquariaComboBox::setSelectedItem(const std::string &item)
 {
-	for (int i = 0; i < items.size(); i++)
+	for (unsigned i = 0; i < items.size(); i++)
 	{
 		if (items[i] == item)
 		{

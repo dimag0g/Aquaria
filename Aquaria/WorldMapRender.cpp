@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace WorldMapRenderNamespace
 {
-	const float WORLDMAP_UNDERLAY_ALPHA = 0.8;
+	const float WORLDMAP_UNDERLAY_ALPHA = 1.0; //! TODO fix rendering and restore 0.8
 
 	float baseMapSegAlpha		= 0.4;
 	float visibleMapSegAlpha	= 0.8;
@@ -766,7 +766,7 @@ WorldMapRender::WorldMapRender() : RenderObject(), ActionMapper()
 	underlay->autoHeight = AUTO_VIRTUALHEIGHT;
 	underlay->followCamera = 1;
 	underlay->alpha = 0;
-	dsq->game->addRenderObject(underlay, LR_HUDUNDERLAY);
+	dsq->game->addRenderObject(underlay, LR_WORLDMAP); //! TODO: fix rendering and restore LR_HUDUNDERLAY
 
 	addHintQuad1 = new Quad("gems/pyramidyellow", Vector(0,0));
 	addHintQuad1->followCamera = 1;
@@ -1250,11 +1250,11 @@ void WorldMapRender::removeGem(GemMover *gem)
 
 void WorldMapRender::fixGems()
 {
-	for (GemMovers::iterator i = gemMovers.begin(); i != gemMovers.end(); i++)
+	for (auto& gm: gemMovers)
 	{
-		removeChild(*i);
-		(*i)->destroy();
-		delete *i;
+		removeChild(gm);
+		gm->destroy();
+		delete gm;
 	}
 	gemMovers.clear();
 	addAllGems();
@@ -1375,7 +1375,6 @@ void WorldMapRender::toggle(bool turnON)
 			{
 				BeaconRender *b = new BeaconRender(&(*i));
 
-
 				addChild(b, PM_POINTER);
 				beaconRenders.push_back(b);
 			}
@@ -1419,12 +1418,9 @@ void WorldMapRender::toggle(bool turnON)
 			activeTile->q->alphaMod = 1;
 		}
 
-
-
 		core->sound->playSfx("Menu-Close");
 
-		if (bg)
-			bg->alpha.interpolateTo(0, 0.2);
+		if (bg) bg->alpha.interpolateTo(0, 0.2);
 
 		alpha.interpolateTo(0, 0.2);
 
@@ -1435,19 +1431,10 @@ void WorldMapRender::toggle(bool turnON)
 		addHintQuad2->alpha.interpolateTo(0, 0.2);
 		helpButton->alpha.interpolateTo(0, 0.2);
 
-
-		for (GemMovers::iterator i = gemMovers.begin(); i != gemMovers.end(); i++)
-		{
-
-			(*i)->safeKill();
-		}
+		for (auto& gm: gemMovers) gm->safeKill();
 		gemMovers.clear();
 
-		for (BeaconRenders::iterator i = beaconRenders.begin(); i != beaconRenders.end(); i++)
-		{
-
-			(*i)->safeKill();
-		}
+		for (auto& br: beaconRenders) br->safeKill();
 		beaconRenders.clear();
 
 		dsq->game->avatar->vel = restoreVel;
@@ -1518,11 +1505,11 @@ void WorldMapRender::action (int id, int state)
 		{
 			if (!mover)
 			{
-				for (GemMovers::iterator i = gemMovers.begin(); i != gemMovers.end(); i++)
+				for (auto& gem: gemMovers)
 				{
-					if ((*i)->canMove && (core->mouse.position - (*i)->getWorldPosition()).isLength2DIn(GEM_GRAB))
+					if (gem->canMove && (core->mouse.position - gem->getWorldPosition()).isLength2DIn(GEM_GRAB))
 					{
-						removeGem(*i);
+						removeGem(gem);
 						break;
 					}
 				}

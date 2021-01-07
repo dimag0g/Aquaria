@@ -34,8 +34,7 @@ Hair::Hair(int nodes, float segmentLength, float hairWidth) : RenderObject()
 
 	hairNodes.resize(nodes);
 
-
-	for (int i = 0; i < hairNodes.size(); i++)
+	for (unsigned i = 0; i < hairNodes.size(); i++)
 	{
 		float perc = (float(i)/(float(hairNodes.size())));
 		if (perc < 0)
@@ -48,12 +47,10 @@ Hair::Hair(int nodes, float segmentLength, float hairWidth) : RenderObject()
 void Hair::exertWave(float dt)
 {
 
-
 }
 
 void Hair::exertGravityWave(float dt)
 {
-
 
 }
 
@@ -75,16 +72,12 @@ HairNode *Hair::getHairNode(int idx)
 
 void Hair::onRender()
 {
-
-
 	glBegin(GL_QUAD_STRIP);
 	float texBits = 1.0f / (hairNodes.size()-1);
 
 	Vector pl, pr;
-	for (int i = 0; i < hairNodes.size(); i++)
+	for (unsigned i = 0; i < hairNodes.size(); i++)
 	{
-
-
 		if (i != hairNodes.size()-1)
 		{
 			Vector diffVec = hairNodes[i+1].position - hairNodes[i].position;
@@ -93,40 +86,26 @@ void Hair::onRender()
 			pr = diffVec.getPerpendicularRight();
 		}
 
-
-
 		glTexCoord2f(0, texBits*i);
 		glVertex3f(hairNodes[i].position.x + pl.x,  hairNodes[i].position.y + pl.y, 0);
 		glTexCoord2f(1, texBits*i);
 		glVertex3f( hairNodes[i].position.x + pr.x,  hairNodes[i].position.y + pr.y, 0);
-
-
-
 	}
 	glEnd();
-
-
-
 }
 
 void Hair::onUpdate(float dt)
 {
 	RenderObject::onUpdate(dt);
-
-
-
 }
 
 void Hair::updatePositions()
 {
 	BBGE_PROF(Hair_updatePositions);
 
-
-	for (int i = 1; i < hairNodes.size(); i++)
+	for (unsigned i = 1; i < hairNodes.size(); i++)
 	{
 		Vector diff = hairNodes[i].position - hairNodes[i-1].position;
-
-
 
 		if (diff.getLength2D() < segmentLength)
 		{
@@ -139,17 +118,12 @@ void Hair::updatePositions()
 			diff.setLength2D(segmentLength);
 			hairNodes[i].position = hairNodes[i-1].position + diff;
 		}
-
-
-
 	}
-
-
 }
 
 void Hair::returnToDefaultPositions(float dt)
 {
-	for (int i = 0; i < hairNodes.size(); i++)
+	for (unsigned i = 0; i < hairNodes.size(); i++)
 	{
 		Vector mov = hairNodes[i].defaultPosition - hairNodes[i].position;
 		if (!mov.isLength2DIn(2))
@@ -165,7 +139,6 @@ void Hair::returnToDefaultPositions(float dt)
 
 void Hair::exertForce(const Vector &force, float dt, int usePerc)
 {
-
 	for (int i = hairNodes.size()-1; i >= 1; i--)
 	{
 		switch (usePerc)
@@ -181,7 +154,6 @@ void Hair::exertForce(const Vector &force, float dt, int usePerc)
 			hairNodes[i].position += force*dt;
 		break;
 		}
-
 	}
 }
 

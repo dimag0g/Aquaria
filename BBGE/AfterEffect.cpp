@@ -85,12 +85,9 @@ AfterEffectManager::~AfterEffectManager()
 
 void AfterEffectManager::deleteEffects()
 {
-	for (int i = 0; i < effects.size(); i++)
+	for (auto& eff: effects)
 	{
-		if (effects[i])
-		{
-			delete effects[i];
-		}
+		if (eff) delete eff;
 	}
 	effects.clear();
 	numEffects=0;
@@ -137,7 +134,7 @@ void AfterEffectManager::update(float dt)
 	else
 		active = false;
 
-	for (int i = 0; i < effects.size(); i++)
+	for (unsigned i = 0; i < effects.size(); i++)
 	{
 		Effect *e = effects[i];
 		if (e)

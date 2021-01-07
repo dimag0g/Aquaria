@@ -262,9 +262,9 @@ void MiniMapRender::slide(int slide)
 
 bool MiniMapRender::isCursorInButtons()
 {
-	for (Buttons::iterator i = buttons.begin(); i != buttons.end(); i++)
+	for (auto& btn: buttons)
 	{
-		if ((core->mouse.position - (*i)->getWorldPosition()).isLength2DIn(BUTTON_RADIUS))
+		if ((core->mouse.position - btn->getWorldPosition()).isLength2DIn(BUTTON_RADIUS))
 		{
 			return true;
 		}
@@ -402,7 +402,7 @@ void MiniMapRender::onUpdate(float dt)
 
 					if (!dsq->game->worldMapRender->isOn())
 					{
-						for (int i = 0; i < buttons.size(); i++)
+						for (unsigned i = 0; i < buttons.size(); i++)
 						{
 							if ((buttons[i]->getWorldPosition() - core->mouse.position).isLength2DIn(BUTTON_RADIUS))
 							{

@@ -45,9 +45,9 @@ void Entity::setIngredientData(const std::string &name)
 
 void Entity::entityDied(Entity *e)
 {
-	for (int i = 0; i < targets.size(); i++)
+	for (auto& target: targets)
 	{
-		targets[i] = 0;
+		target = 0;
 	}
 
 	if (boneLock.on)
@@ -73,11 +73,11 @@ void Entity::generateCollisionMask(int ovrCollideRadius)
 {
 	if (this->skeletalSprite.isLoaded())
 	{
-		for (int i = 0; i < skeletalSprite.bones.size(); i++)
+		for (auto bone: skeletalSprite.bones)
 		{
-			if (skeletalSprite.bones[i]->generateCollisionMask)
+			if (bone->generateCollisionMask)
 			{
-				dsq->game->generateCollisionMask(skeletalSprite.bones[i], ovrCollideRadius);
+				dsq->game->generateCollisionMask(bone, ovrCollideRadius);
 			}
 		}
 	}
@@ -196,7 +196,7 @@ Entity::Entity()
 	dropChance = 0;
 	inCurrent = false;
 	entityProperties.resize(EP_MAX);
-	for (int i = 0; i < entityProperties.size(); i++)
+	for (unsigned i = 0; i < entityProperties.size(); i++)
 	{
 		entityProperties[i] = false;
 	}
@@ -2331,11 +2331,11 @@ void Entity::warpLastPosition()
 
 void Entity::spawnParticlesFromCollisionMask(const std::string &p, int intv)
 {
-	for (int i = 0; i < skeletalSprite.bones.size(); i++)
+	for (auto& bone: skeletalSprite.bones)
 	{
-		for (int j = 0; j < skeletalSprite.bones[i]->collisionMask.size(); j+=intv)
+		for (int j = 0; j < bone->collisionMask.size(); j+=intv)
 		{
-			Vector pos = skeletalSprite.bones[i]->getWorldCollidePosition(skeletalSprite.bones[i]->collisionMask[j]);
+			Vector pos = bone->getWorldCollidePosition(bone->collisionMask[j]);
 			dsq->spawnParticleEffect(p, pos);
 		}
 	}
@@ -2546,10 +2546,8 @@ void Entity::doSpellAvoidance(float dt, int range, float mod)
 	Vector accum;
 
 	int c = 0;
-	for (Shot::Shots::iterator i = Shot::shots.begin(); i != Shot::shots.end(); i++)
+	for (auto& s: Shot::shots)
 	{
-		Shot *s = (Shot*)(*i);
-
 		if (s->isActive() && (s->position - this->position).getSquaredLength2D() < sqr(range))
 		{
 			for (int j = 0; j < ignoreShotDamageTypes.size(); j++)

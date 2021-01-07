@@ -442,7 +442,7 @@ void Nag::update(float dt)
 		ic ++;
 		if (ic >= numScreens)
 			ic = 0;
-		for (int i = 0; i < irot.size(); i++) irot[i]->alpha.interpolateTo(0, nagFadeTime);
+		for (auto& i: irot) i->alpha.interpolateTo(0, nagFadeTime);
 		irot[ic]->alpha.interpolateTo(1, nagFadeTime);
 	}
 }

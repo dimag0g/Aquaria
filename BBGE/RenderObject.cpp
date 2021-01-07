@@ -99,10 +99,7 @@ void RenderObject::setColorMult(const Vector &color, const float alpha)
 	this->savedAlpha = this->alpha.x;
 	this->color *= color;
 	this->alpha.x *= alpha;
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
-	{
-		(*i)->setColorMult(color, alpha);
-	}
+	for (auto& child: children) child->setColorMult(color, alpha);
 }
 
 void RenderObject::clearColorMult()
@@ -117,10 +114,7 @@ void RenderObject::clearColorMult()
 	this->color.z = this->savedColor.z;
 	this->alpha.x = this->savedAlpha;
 	this->colorIsSaved = false;
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
-	{
-		(*i)->clearColorMult();
-	}
+	for (auto& child: children) child->clearColorMult();
 }
 
 RenderObject::RenderObject()
@@ -369,19 +363,19 @@ void RenderObject::flipVertical()
 
 void RenderObject::destroy()
 {
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
+	for (auto& child: children)
 	{
 		// must do this first
 		// otherwise child will try to remove THIS
-		(*i)->parent = 0;
-		switch ((*i)->pm)
+		child->parent = 0;
+		switch (child->pm)
 		{
 		case PM_STATIC:
-			(*i)->destroy();
+			child->destroy();
 			break;
 		case PM_POINTER:
-			(*i)->destroy();
-			delete (*i);
+			child->destroy();
+			delete child;
 			break;
 		}
 	}
@@ -433,7 +427,6 @@ void RenderObject::setStateDataObject(StateData *state)
 	stateData = state;
 }
 
-
 void RenderObject::toggleCull(bool value)
 {
 	cull = value;
@@ -473,10 +466,10 @@ void RenderObject::enableMotionBlur(int sz, int off)
 	motionBlurPositions.resize(sz);
 	motionBlurFrameOffsetCounter = 0;
 	motionBlurFrameOffset = off;
-	for (int i = 0; i < motionBlurPositions.size(); i++)
+	for (auto& blur: motionBlurPositions)
 	{
-		motionBlurPositions[i].position = position;
-		motionBlurPositions[i].rotz = rotation.z;
+		blur.position = position;
+		blur.rotz = rotation.z;
 	}
 }
 
@@ -496,7 +489,6 @@ bool RenderObject::isfhr()
 			fh = !fh;
 	while ((p = p->parent));
 	return fh;
-
 }
 
 bool RenderObject::isfvr()
@@ -508,17 +500,14 @@ bool RenderObject::isfvr()
 			fv = !fv;
 	while ((p = p->parent));
 	return fv;
-
 }
 
 bool RenderObject::hasRenderPass(const int pass)
 {
-	if (pass == renderPass)
-		return true;
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
+	if (pass == renderPass) return true;
+	for (auto& child: children)
 	{
-		if (!(*i)->isDead() && (*i)->hasRenderPass(pass))
-			return true;
+		if (!child->isDead() && child->hasRenderPass(pass)) return true;
 	}
 	return false;
 }
@@ -560,7 +549,7 @@ void RenderObject::render()
 		Vector oldPos = position;
 		float oldAlpha = alpha.x;
 		float oldRotZ = rotation.z;
-		for (int i = 0; i < motionBlurPositions.size(); i++)
+		for (unsigned i = 0; i < motionBlurPositions.size(); i++)
 		{
 			position = motionBlurPositions[i].position;
 			rotation.z = motionBlurPositions[i].rotz;
@@ -682,18 +671,12 @@ void RenderObject::renderCall()
 		glTranslatef(beforeScaleOffset.x, beforeScaleOffset.y, beforeScaleOffset.z);
 		glScalef(scale.x, scale.y, 1);
 		glTranslatef(internalOffset.x, internalOffset.y, internalOffset.z);
-
-
-
 	}
 
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
+	for (auto& child: children)
 	{
-		if (!(*i)->isDead() && (*i)->renderBeforeParent)
-			(*i)->render();
+		if (!child->isDead() && child->renderBeforeParent) child->render();
 	}
-
-
 
 	{
 		if (rlayer)
@@ -745,24 +728,20 @@ void RenderObject::renderCall()
 	if (doRender)
 		onRender();
 
-
 	if (!RENDEROBJECT_SHAREATTRIBUTES)
 	{
 		glPopAttrib();
 	}
 
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
+	for (auto& child: children)
 	{
-		if (!(*i)->isDead() && !(*i)->renderBeforeParent)
-			(*i)->render();
+		if (!child->isDead() && !child->renderBeforeParent) child->render();
 	}
-
 
 	if (!RENDEROBJECT_FASTTRANSFORM)
 	{
 		glPopMatrix();
 	}
-
 
 	position -= offset;
 }
@@ -774,24 +753,15 @@ void RenderObject::renderCollision()
 		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		glPushMatrix();
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-
-
 		glLoadIdentity();
 		core->setupRenderPositionAndScale();
-
-
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		glColor4f(1,1,0,0.5);
 
-		for (int i = 0; i < transformedCollisionMask.size(); i++)
-			{
-			Vector collide = this->transformedCollisionMask[i];
-
-
-
+		for (auto& mask: transformedCollisionMask)
+		{
+			Vector collide = mask;
 			glTranslatef(collide.x, collide.y, 0);
 			RenderObject *parent = this->getTopParent();
 			if (parent)
@@ -799,12 +769,9 @@ void RenderObject::renderCollision()
 			glTranslatef(-collide.x, -collide.y, 0);
 		}
 
-
 		glDisable(GL_BLEND);
 		glPopMatrix();
 		glPopAttrib();
-
-
 	}
 	else if (collideRadius > 0)
 	{
@@ -813,12 +780,8 @@ void RenderObject::renderCollision()
 		core->setupRenderPositionAndScale();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glTranslatef(position.x+offset.x, position.y+offset.y, 0);
-
 		glTranslatef(internalOffset.x, internalOffset.y, 0);
 		glEnable(GL_BLEND);
-
-
-
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glColor4f(1,0,0,0.5);
 		drawCircle(collideRadius, 8);
@@ -843,7 +806,7 @@ Vector RenderObject::getCollisionMaskNormal(int index)
 {
 	Vector sum;
 	int num=0;
-	for (int i = 0; i < this->transformedCollisionMask.size(); i++)
+	for (unsigned i = 0; i < this->transformedCollisionMask.size(); i++)
 	{
 		if (i != index)
 		{
@@ -858,10 +821,7 @@ Vector RenderObject::getCollisionMaskNormal(int index)
 	if (!sum.isZero())
 	{
 		sum /= num;
-
 		sum.normalize2D();
-
-
 	}
 
 	return sum;
@@ -888,9 +848,6 @@ void RenderObject::lookAt(const Vector &pos, float t, float minAngle, float maxA
 	if (isPieceFlippedHorizontal())
 	{
 		angle = 180-angle;
-
-
-
 		offset = -offset;
 	}
 	angle += offset;
@@ -930,17 +887,16 @@ void RenderObject::update(float dt)
 	}
 	if (!isDead())
 	{
-
 		onUpdate(dt);
 
 		if (isHidden())
 			return;
 
-		for (Children::iterator i = children.begin(); i != children.end(); i++)
+		for (auto& child: children)
 		{
-			if ((*i)->updateAfterParent && (((*i)->pm == PM_POINTER) || ((*i)->pm == PM_STATIC)))
+			if (child->updateAfterParent && ((child->pm == PM_POINTER) || (child->pm == PM_STATIC)))
 			{
-				(*i)->update(dt);
+				child->update(dt);
 			}
 		}
 	}
@@ -957,10 +913,7 @@ void RenderObject::removeChild(RenderObject *r)
 		return;
 	}
 
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
-	{
-		(*i)->removeChild(r);
-	}
+	for (auto& child: children) child->removeChild(r);
 }
 
 void RenderObject::enqueueChildDeletion(RenderObject *r)
@@ -968,9 +921,7 @@ void RenderObject::enqueueChildDeletion(RenderObject *r)
 	if (r->parent == this)
 	{
 		// Don't garbage a child more than once
-		for (size_t i = 0; i < childGarbage.size(); ++i)
-			if(childGarbage[i] == r)
-				return;
+		for (auto& child: childGarbage) if(child == r) return;
 		childGarbage.push_back(r);
 	}
 }
@@ -981,15 +932,11 @@ void RenderObject::safeKill()
 	life = 0;
 	onEndOfLife();
 
-	for (RenderObjectList::iterator i = deathNotifications.begin(); i != deathNotifications.end(); i++)
-	{
-		(*i)->deathNotify(this);
-	}
+	for (auto& n: deathNotifications) n->deathNotify(this);
 
 	if (this->parent)
 	{
 		parent->enqueueChildDeletion(this);
-
 	}
 	else
 	{
@@ -1050,26 +997,26 @@ void RenderObject::onUpdate(float dt)
 	beforeScaleOffset.update(dt);
 	rotationOffset.update(dt);
 
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
+	for (auto& child: children)
 	{
 		if (shareAlphaWithChildren)
-			(*i)->alpha.x = this->alpha.x;
+			child->alpha.x = this->alpha.x;
 		if (shareColorWithChildren)
-			(*i)->color = this->color;
+			child->color = this->color;
 
-		if (!(*i)->updateAfterParent && (((*i)->pm == PM_POINTER) || ((*i)->pm == PM_STATIC)))
+		if (!child->updateAfterParent && ((child->pm == PM_POINTER) || (child->pm == PM_STATIC)))
 		{
-			(*i)->update(dt);
+			child->update(dt);
 		}
 	}
 
 	if (!childGarbage.empty())
 	{
-		for (Children::iterator i = childGarbage.begin(); i != childGarbage.end(); i++)
+		for (auto& child: childGarbage)
 		{
-			removeChild(*i);
-			(*i)->destroy();
-			delete (*i);
+			removeChild(child);
+			child->destroy();
+			delete child;
 		}
 		childGarbage.clear();
 	}
@@ -1104,18 +1051,12 @@ void RenderObject::onUpdate(float dt)
 
 void RenderObject::unloadDevice()
 {
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
-	{
-		(*i)->unloadDevice();
-	}
+	for (auto& child: children) child->unloadDevice();
 }
 
 void RenderObject::reloadDevice()
 {
-	for (Children::iterator i = children.begin(); i != children.end(); i++)
-	{
-		(*i)->reloadDevice();
-	}
+	for (auto& child: children) child->reloadDevice();
 }
 
 bool RenderObject::setTexture(const std::string &n)

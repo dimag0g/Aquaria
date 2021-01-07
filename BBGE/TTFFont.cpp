@@ -233,8 +233,6 @@ int TTFText::findLine(const std::string &label)
 
 void TTFText::onRender()
 {
-
-
 	for (int i = 0; i < text.size(); i++)
 	{
 		if (shadow)
@@ -247,7 +245,6 @@ void TTFText::onRender()
 			glPopMatrix();
 		}
 
-
 		glColor4f(color.x, color.y, color.z, alpha.x*alphaMod);
 		glPushMatrix();
 		glScalef(1, -1, 0);
@@ -258,7 +255,4 @@ void TTFText::onRender()
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	RenderObject::lastTextureApplied = 0;
-
-
-
 }

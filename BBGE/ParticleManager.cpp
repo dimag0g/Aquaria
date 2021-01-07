@@ -47,12 +47,11 @@ ParticleManager::ParticleManager(int size)
 void ParticleManager::setSize(int size)
 {
 	// dangerous!
-	for (int i = 0; i < particles.size(); i++)
+	for (auto& p: particles)
 	{
-		Particle *p = &particles[i];
-		if (p->emitter)
+		if (p.emitter)
 		{
-			p->emitter->removeParticle(p);
+			p.emitter->removeParticle(&p);
 		}
 	}
 
@@ -129,11 +128,9 @@ void ParticleManager::updateParticle(Particle *p, float dt)
 				specialFunction(p);
 			}
 			p->lpos = p->pos;
-			Influences::iterator i = influences.begin();
-			for (; i != influences.end(); i++)
+			for (auto& inf: influences)
 			{
-
-				pinf = &(*i);
+				pinf = &inf;
 				Vector pos = p->pos;
 				//HACK: what? ->
 				if (p->emitter->data.spawnLocal && p->emitter->getParent())
@@ -342,9 +339,9 @@ void ParticleManager::loadParticleEffectFromBank(const std::string &name, Partic
 
 void ParticleManager::clearParticleBank()
 {
-	for (ParticleBank::iterator i = particleBank.begin(); i != particleBank.end(); i++)
+	for (auto& p: particleBank)
 	{
-		ParticleEffect *e = (*i).second;
+		ParticleEffect *e = p.second;
 		if (e)
 		{
 			e->destroy();
@@ -363,11 +360,11 @@ void ParticleManager::update(float dt)
 {
 	BBGE_PROF(ParticleManager_update);
 	numActive = 0;
-	for (int i = 0; i < particles.size(); i++)
+	for (auto& p: particles)
 	{
-		if (particles[i].active)
+		if (p.active)
 		{
-			updateParticle(&particles[i], dt);
+			updateParticle(&p, dt);
 		}
 	}
 }

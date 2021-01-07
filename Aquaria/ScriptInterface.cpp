@@ -910,8 +910,8 @@ luaFunc(getInterfaceFunctionNames)
 #define MakeTypeCheckFunc(fname, ty) luaFunc(fname) \
 	{ ScriptObject *r = (ScriptObject*)lua_touserdata(L, 1); luaReturnBool(r ? r->isType(ty) : false); }
 
-MakeTypeCheckFunc(isNode, SCO_PATH);
-MakeTypeCheckFunc(isObject, SCO_RENDEROBJECT);
+MakeTypeCheckFunc(isNode, SCO_PATH)
+MakeTypeCheckFunc(isObject, SCO_RENDEROBJECT)
 MakeTypeCheckFunc(isEntity, SCO_ENTITY)
 MakeTypeCheckFunc(isScriptedEntity, SCO_SCRIPTED_ENTITY)
 MakeTypeCheckFunc(isBone, SCO_BONE)
@@ -1257,9 +1257,7 @@ luaFunc(obj_removeAllChildren)
 	bool del = getBool(L, 2);
 	if(r)
 	{
-		if(del)
-			for(RenderObject::Children::iterator it = r->children.begin(); it != r->children.end(); ++it)
-				(*it)->safeKill();
+		if(del)	for(auto& child: r->children) child->safeKill();
 		r->children.clear();
 	}
 	luaReturnNil();
@@ -5677,9 +5675,9 @@ luaFunc(entity_doElementInteraction)
 			touchWidth = 16;
 
 		ElementUpdateList& elems = dsq->game->elementInteractionList;
-		for (ElementUpdateList::iterator it = elems.begin(); it != elems.end(); ++it)
+		for (auto& el: elems)
 		{
-			(*it)->doInteraction(e, mult, touchWidth);
+			el->doInteraction(e, mult, touchWidth);
 		}
 	}
 	luaReturnNil();
@@ -7587,9 +7585,8 @@ luaFunc(entity_getNearestBoneToPosition)
 	Bone *closest = 0;
 	if (me)
 	{
-		for (int i = 0; i < me->skeletalSprite.bones.size(); i++)
+		for (auto& b: me->skeletalSprite.bones)
 		{
-			Bone *b = me->skeletalSprite.bones[i];
 			float dist = (b->getWorldPosition() - p).getSquaredLength2D();
 			if (dist < smallestDist)
 			{

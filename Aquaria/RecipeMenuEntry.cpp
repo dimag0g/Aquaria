@@ -73,22 +73,20 @@ RecipeMenuEntry::RecipeMenuEntry(Recipe *recipe) : RenderObject(), recipe(recipe
 
 	int size=0;
 
-	for (int i = 0; i < recipe->names.size(); i++)
-		size += recipe->names[i].amount;
+	for (const auto& r: recipe->names) size += r.amount;
 
-	for (int j = 0; j < recipe->types.size(); j++)
-		size += recipe->types[j].amount;
+	for (const auto& t: recipe->types) size += t.amount;
 
 	size --;
 
 
-	for (int i = 0; i < recipe->names.size(); i++)
+	for (const auto& r: recipe->names)
 	{
-		debugLog("recipe name: " + recipe->names[i].name);
-		IngredientData *data = dsq->continuity.getIngredientDataByName(recipe->names[i].name);
+		debugLog("recipe name: " + r.name);
+		IngredientData *data = dsq->continuity.getIngredientDataByName(r.name);
 		if (data)
 		{
-			for (int j = 0; j < recipe->names[i].amount; j++)
+			for (int j = 0; j < r.amount; j++)
 			{
 				ing[c] = new Quad("ingredients/" + data->gfx, Vector(100*c,0));
 				ing[c]->scale = Vector(0.7, 0.7);
@@ -118,10 +116,10 @@ RecipeMenuEntry::RecipeMenuEntry(Recipe *recipe) : RenderObject(), recipe(recipe
 		}
 	}
 
-	for (int i = 0; i < recipe->types.size(); i++)
+	for (auto& t: recipe->types)
 	{
 
-		for (int j = 0; j < recipe->types[i].amount; j++)
+		for (int j = 0; j < t.amount; j++)
 		{
 			// any type of whatever...
 			BitmapText *text = new BitmapText(&dsq->smallFont);
@@ -129,9 +127,9 @@ RecipeMenuEntry::RecipeMenuEntry(Recipe *recipe) : RenderObject(), recipe(recipe
 			text->scale = Vector(0.8, 0.8);
 			text->position = Vector(100*c, 0);
 
-			std::string typeName = dsq->continuity.getIngredientDisplayName(recipe->types[i].typeName);
+			std::string typeName = dsq->continuity.getIngredientDisplayName(t.typeName);
 
-			if (recipe->types[i].type != IT_ANYTHING)
+			if (t.type != IT_ANYTHING)
 				typeName = dsq->continuity.stringBank.get(2031) + "\n" + typeName;
 			else
 				typeName = std::string("\n") + typeName;
@@ -181,19 +179,10 @@ void RecipeMenuEntry::onUpdate(float dt)
 
 			std::ostringstream ds;
 
-
-			for (int i = 0; i < data->effects.size(); i++)
+			for (unsigned i = 0; i < data->effects.size(); i++)
 			{
 				ds << dsq->continuity.getIEString(data, i);
-				if (i == data->effects.size()-1)
-				{
-
-
-				}
-				else
-				{
-					ds << ", ";
-				}
+				if (i != data->effects.size()-1) ds << ", ";
 			}
 
 			game->recipeMenu.description->setText(ds.str());
@@ -208,10 +197,9 @@ void RecipeMenuEntry::onUpdate(float dt)
 
 			int n=0;
 
-			for (int i = 0; i < game->recipeMenu.recipeMenuEntries.size(); i++)
+			for (auto& entry: game->recipeMenu.recipeMenuEntries)
 			{
-				if (!game->recipeMenu.recipeMenuEntries[i]->selected)
-					n++;
+				if (!entry->selected) n++;
 			}
 
 			if (n == game->recipeMenu.recipeMenuEntries.size())
@@ -249,12 +237,9 @@ void RecipeMenu::slide(RenderObject *r, bool in, float t)
 int RecipeMenu::getNumKnown()
 {
 	int num = 0;
-	for (int i = 0; i < dsq->continuity.recipes.size(); i++)
+	for (auto& recipe: dsq->continuity.recipes)
 	{
-		if (dsq->continuity.recipes[i].isKnown())
-		{
-			num++;
-		}
+		if (recipe.isKnown()) num++;
 	}
 	return num;
 }
@@ -263,8 +248,6 @@ int RecipeMenu::getNumPages()
 {
 	int numKnown = dsq->continuity.recipes.size();
 	int numPages = (numKnown/pageSize);
-
-
 
 	std::ostringstream os;
 	os << "numKnown: " << numKnown << " pagesSize: " << pageSize << " numPages: " << numPages;
@@ -430,11 +413,11 @@ void RecipeMenu::createPage(int p)
 
 void RecipeMenu::destroyPage()
 {
-	for (int i = 0; i < recipeMenuEntries.size(); i++)
+	for (auto& entry: recipeMenuEntries)
 	{
-		recipeMenuEntries[i]->setLife(1);
-		recipeMenuEntries[i]->setDecayRate(20);
-		recipeMenuEntries[i]->fadeAlphaWithLife = 1;
+		entry->setLife(1);
+		entry->setDecayRate(20);
+		entry->fadeAlphaWithLife = 1;
 	}
 	recipeMenuEntries.clear();
 

@@ -41,9 +41,8 @@ void Precacher::setBaseDir(const std::string& dir)
 
 void Precacher::clean()
 {
-	for (unsigned int i = 0; i < renderObjects.size(); i++)
+	for (auto& r: renderObjects)
 	{
-		RenderObject *r = renderObjects[i];
 		r->destroy();
 		delete r;
 	}

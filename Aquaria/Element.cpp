@@ -127,7 +127,7 @@ void Element::updateEffects(float dt)
 				float magRedSpd = 48;
 				float lerpSpd = 5.0;
 				float wavySz = float(eff->wavy.size());
-				for (int i = 0; i < eff->wavy.size(); i++)
+				for (unsigned i = 0; i < eff->wavy.size(); i++)
 				{
 					float weight = float(i)/wavySz;
 					if (eff->wavyFlip)
@@ -300,10 +300,9 @@ void Element::render()
 		renderBorderColor = Vector(0.5,0.5,0.5);
 		if (!dsq->game->sceneEditor.selectedElements.empty())
 		{
-			for (int i = 0; i < dsq->game->sceneEditor.selectedElements.size(); i++)
+			for (auto& element: dsq->game->sceneEditor.selectedElements)
 			{
-				if (this == dsq->game->sceneEditor.selectedElements[i])
-					renderBorderColor = Vector(1,1,1);
+				if (this == element) renderBorderColor = Vector(1,1,1);
 			}
 		}
 		else

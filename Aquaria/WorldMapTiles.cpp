@@ -280,10 +280,9 @@ void WorldMap::save()
 
 	if (out)
 	{
-		for (int i = 0; i < worldMapTiles.size(); i++)
+		for (auto& t: worldMapTiles)
 		{
-			WorldMapTile *t = &worldMapTiles[i];
-			out << t->index << " " << t->stringIndex << " " << t->name << " " << t->layer << " " << t->scale << " " << t->gridPos.x << " " << t->gridPos.y << " " << t->prerevealed << " " << t->scale2 << std::endl;
+			out << t.index << " " << t.stringIndex << " " << t.name << " " << t.layer << " " << t.scale << " " << t.gridPos.x << " " << t.gridPos.y << " " << t.prerevealed << " " << t.scale2 << std::endl;
 		}
 		dsq->screenMessage(dsq->continuity.stringBank.get(2019) + " " + fn);
 	}
@@ -315,36 +314,25 @@ WorldMapTile *WorldMap::getWorldMapTile(const std::string &name)
 {
 	std::string n = name;
 	stringToUpper(n);
-	for (int i = 0; i < worldMapTiles.size(); i++)
+	for (auto& t: worldMapTiles)
 	{
-		if (worldMapTiles[i].name == n)
-		{
-			return &worldMapTiles[i];
-		}
+		if (t.name == n) return &t;
 	}
 	return 0;
 }
 
 WorldMapTile *WorldMap::getWorldMapTileByIndex(int index)
 {
-	for (int i = 0; i < worldMapTiles.size(); i++)
+	for (auto& t: worldMapTiles)
 	{
-		if (worldMapTiles[i].index == index)
-		{
-			return &worldMapTiles[i];
-		}
+		if (t.index == index) return &t;
 	}
 	return 0;
 }
 
-
-
 void WorldMap::hideMap()
 {
-	for (int i = 0; i < worldMapTiles.size(); i++)
-	{
-		worldMapTiles[i].revealed = false;
-	}
+	for (auto& t: worldMapTiles) t.revealed = false;
 }
 
 int WorldMap::getNumWorldMapTiles()

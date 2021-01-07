@@ -155,10 +155,7 @@ void EventQueue::update(float dt)
 
 void EventQueue::clear()
 {
-	for (EventTimers::iterator i = eventTimers.begin(); i != eventTimers.end(); i++)
-	{
-		i->eventPtr.clean();
-	}
+	for (auto& timer: eventTimers) timer.eventPtr.clean();
 	eventTimers.clear();
 }
 

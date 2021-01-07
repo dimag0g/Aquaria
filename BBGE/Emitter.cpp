@@ -30,14 +30,13 @@ Emitter::Emitter(ParticleEffect *pe) : Quad(), pe(pe)
 void Emitter::destroy()
 {
 	BBGE_PROF(Emitter_destroy);
-	for (Particles::iterator i = particles.begin(); i != particles.end(); i++)
+	for (auto& p: particles)
 	{
-		(*i)->active = false;
-		(*i)->emitter = 0;
+		p->active = false;
+		p->emitter = 0;
 	}
 	particles.clear();
 	Quad::destroy();
-
 }
 
 void Emitter::spawnParticle(float perc)
@@ -220,7 +219,6 @@ void Emitter::removeParticle(Particle *p)
 	}
 	else
 		particles.remove(p);
-
 }
 
 void Emitter::render()
@@ -247,15 +245,12 @@ void Emitter::onRender()
 	if (texture)
 		texture->apply();
 
-
-
 	if (hasRot)
 	{
 		Vector colorMult = data.inheritColor ? pe->color : Vector(1, 1, 1);
 		float alphaMult = data.inheritAlpha ? pe->alpha.x : 1;
-		for (Particles::iterator i = particles.begin(); i != particles.end(); i++)
+		for (auto& p: particles)
 		{
-			Particle *p = *i;
 			if (p->active)
 			{
 				const float dx = w2 * p->scale.x;
@@ -264,22 +259,17 @@ void Emitter::onRender()
 				Vector col = p->color * colorMult;
 				glColor4f(col.x, col.y, col.z, p->alpha.x * alphaMult);
 
-
 				if (p->rot.z != 0 || p->rot.isInterpolating())
 				{
 					glPushMatrix();
 
 						glTranslatef(p->pos.x, p->pos.y,0);
-
 						glRotatef(p->rot.z, 0, 0, 1);
 
 						if (data.flipH || (data.copyParentFlip && (pe->isfh() || (pe->getParent() && pe->getParent()->isfh()))))
 						{
-
 							glRotatef(180, 0, 1, 0);
 						}
-
-
 
 						glBegin(GL_QUADS);
 							glTexCoord2f(0,1);
@@ -322,9 +312,8 @@ void Emitter::onRender()
 	else
 	{
 		glBegin(GL_QUADS);
-		for (Particles::iterator i = particles.begin(); i != particles.end(); i++)
+		for (auto& p: particles)
 		{
-			Particle *p = *i;
 			if (p->active)
 			{
 				const float x = p->pos.x;

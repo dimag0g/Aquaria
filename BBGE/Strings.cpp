@@ -128,12 +128,9 @@ void clearInputCodeMap()
 
 std::string getInputCodeToString(int key)
 {
-	for (InputCodeMap::iterator i = inputCodeMap.begin(); i != inputCodeMap.end(); i++)
+	for (auto& in: inputCodeMap)
 	{
-		if ((*i).second == key)
-		{
-			return (*i).first;
-		}
+		if (in.second == key) return in.first;
 	}
 	return "";
 }
@@ -142,11 +139,11 @@ std::string getInputCodeToString(int key)
 
 std::string getInputCodeToUserString(int key)
 {
-	for (InputCodeMap::iterator i = inputCodeMap.begin(); i != inputCodeMap.end(); i++)
+	for (auto& in: inputCodeMap)
 	{
-		if ((*i).second == key)
+		if (in.second == key)
 		{
-			std::string use = (*i).first;
+			std::string use = in.first;
 			int idx = 0;
 			idx = use.find("KEY_");
 			if (idx != std::string::npos)
@@ -161,7 +158,6 @@ std::string getInputCodeToUserString(int key)
 				use = "Middle Mouse Button";
 
 			return use;
-
 		}
 	}
 	return "";

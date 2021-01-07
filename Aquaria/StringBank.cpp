@@ -48,8 +48,6 @@ void StringBank::load()
 
 void StringBank::_load(const std::string &file)
 {
-
-
 	InStream in(file.c_str());
 
 	std::string line;
@@ -59,14 +57,11 @@ void StringBank::_load(const std::string &file)
 	{
 		std::getline(in, line);
 
-
-
 		if (!line.empty() && line[0] == ' ')
 			line = line.substr(1, line.size());
-		for (int i = 0; i < line.size(); i++)
+		for (auto& c: line)
 		{
-			if (line[i] == '|')
-				line[i] = '\n';
+			if (c == '|') c = '\n';
 		}
 		stringMap[idx] = line;
 	}

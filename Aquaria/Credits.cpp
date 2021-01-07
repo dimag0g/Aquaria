@@ -64,7 +64,7 @@ namespace AQCredits
 		else
 			cred->alpha.interpolateTo(0, t, 0, 0, 1);
 	}
-};
+}
 
 using namespace AQCredits;
 
@@ -127,7 +127,7 @@ void Credits::applyState()
 
 	slides.resize(numSlides);
 
-	for (int i = 0; i < slides.size(); i++)
+	for (unsigned i = 0; i < slides.size(); i++)
 	{
 		slides[i] = new Quad("credits/slide-" + numToZeroString(i, 4), Vector(400, 300));
 		slides[i]->alpha = 0;

@@ -29,7 +29,7 @@ namespace IntroStuff
 {
 	//Mappy *m;
 	bool quitFlag;
-};
+}
 
 using namespace IntroStuff;
 
@@ -198,10 +198,10 @@ void Intro::createMeteor(int layer, Vector pos, Vector off, Vector sz)
 
 void Intro::clearMeteors()
 {
-	for (int i = 0; i < meteors.size(); i++)
+	for (auto& meteor: meteors)
 	{
-		meteors[i]->setLife(1);
-		meteors[i]->setDecayRate(100);
+		meteor->setLife(1);
+		meteor->setDecayRate(100);
 	}
 
 	meteors.clear();
@@ -255,11 +255,11 @@ void Intro::update(float dt)
 		citybg->offset = Vector(-100, 0);
 		citybg->scale = Vector(0.6, 0.6);
 		citybg->alpha = 0;
-		for (int i = 0; i < citybg->bones.size(); i++)
+		for (auto& bone: citybg->bones)
 		{
-			if (citybg->bones[i]->name != "meteor")
+			if (bone->name != "meteor")
 			{
-				citybg->bones[i]->color = citybg->color;
+				bone->color = citybg->color;
 			}
 		}
 		addRenderObject(citybg, LR_ENTITIES);
@@ -272,13 +272,11 @@ void Intro::update(float dt)
 		eric->position = Vector(50, 400);
 		eric->alpha = 0;
 		eric->scale = Vector(0.4, 0.4);
-		for (int i = 0; i < eric->bones.size(); i++)
+		for (auto& bone: eric->bones)
 		{
-			eric->bones[i]->color = eric->color;
+			bone->color = eric->color;
 		}
 		addRenderObject(eric, LR_ENTITIES);
-
-
 
 		dsq->overlay->alpha = 0;
 		dsq->overlay2->alpha = 0;
@@ -430,12 +428,12 @@ void Intro::update(float dt)
 		city->shareColorWithChildren = true;
 		city->shareAlphaWithChildren = true;
 		city->alpha = 0;
-		for (int i = 1; i <=2; i++)
+		for (unsigned i = 1; i <=2; i++)
 		{
 			Bone *b = city->getBoneByIdx(i);
 			b->rotationOffset.interpolateTo(Vector(0,0,360), 0.5, -1);
 		}
-		for (int i = 3; i <=5; i++)
+		for (unsigned i = 3; i <=5; i++)
 		{
 			Bone *b = city->getBoneByIdx(i);
 			b->scale.interpolateTo(Vector(0.2, 1), 0.2, -1, 1);

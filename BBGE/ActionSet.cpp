@@ -28,11 +28,11 @@ void ActionSet::clearActions()
 
 ActionInput *ActionSet::getActionInputByName(const std::string &name)
 {
-	for (ActionInputSet::iterator i = inputSet.begin(); i != inputSet.end(); i++)
+	for (auto& in: inputSet)
 	{
-		if (nocasecmp((*i).name, name) == 0)
+		if (nocasecmp(in.name, name) == 0)
 		{
-			return &(*i);
+			return &in;
 		}
 	}
 	return 0;
@@ -44,20 +44,19 @@ void ActionSet::importAction(ActionMapper *mapper, const std::string &name, int 
 {
 	if (!mapper) return;
 
-	for (int i = 0; i < inputSet.size(); i++)
+	for (auto& actionInput: inputSet)
 	{
-		ActionInput *actionInput = &inputSet[i];
-		if (actionInput->name == name)
+		if (actionInput.name == name)
 		{
 			for (int i = 0; i < INP_MSESIZE; i++)
-				if (actionInput->mse[i])
-					mapper->addAction(actionID, actionInput->mse[i]);
+				if (actionInput.mse[i])
+					mapper->addAction(actionID, actionInput.mse[i]);
 			for (int i = 0; i < INP_KEYSIZE; i++)
-				if (actionInput->key[i])
-					mapper->addAction(actionID, actionInput->key[i]);
+				if (actionInput.key[i])
+					mapper->addAction(actionID, actionInput.key[i]);
 			for (int i = 0; i < INP_JOYSIZE; i++)
-				if (actionInput->joy[i])
-					mapper->addAction(actionID, actionInput->joy[i]);
+				if (actionInput.joy[i])
+					mapper->addAction(actionID, actionInput.joy[i]);
 			return;
 		}
 	}
@@ -68,20 +67,19 @@ void ActionSet::importAction(ActionMapper *mapper, const std::string &name, Even
 {
 	if (!mapper) return;
 
-	for (int i = 0; i < inputSet.size(); i++)
+	for (auto& actionInput: inputSet)
 	{
-		ActionInput *actionInput = &inputSet[i];
-		if (actionInput->name == name)
+		if (actionInput.name == name)
 		{
 			for (int i = 0; i < INP_MSESIZE; i++)
-				if (actionInput->mse[i])
-					mapper->addAction(event, actionInput->mse[i], state);
+				if (actionInput.mse[i])
+					mapper->addAction(event, actionInput.mse[i], state);
 			for (int i = 0; i < INP_KEYSIZE; i++)
-				if (actionInput->key[i])
-					mapper->addAction(event, actionInput->key[i], state);
+				if (actionInput.key[i])
+					mapper->addAction(event, actionInput.key[i], state);
 			for (int i = 0; i < INP_JOYSIZE; i++)
-				if (actionInput->joy[i])
-					mapper->addAction(event, actionInput->joy[i], state);
+				if (actionInput.joy[i])
+					mapper->addAction(event, actionInput.joy[i], state);
 
 			return;
 		}

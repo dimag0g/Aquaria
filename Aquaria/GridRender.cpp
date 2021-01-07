@@ -155,10 +155,10 @@ void SongLineRender::onRender()
 	if (ls < 0)
 		ls = 1;
 	glLineWidth(ls);
-	const int alphaLine = pts.size()*(0.9f);
+	const unsigned alphaLine = pts.size()*(0.9f);
 	float a = 1;
 	glBegin(GL_LINE_STRIP);
-	for (int i = 0; i < pts.size(); i++)
+	for (unsigned i = 0; i < pts.size(); i++)
 	{
 		if (i < alphaLine)
 			a = float(i)/float(alphaLine);

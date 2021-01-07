@@ -677,14 +677,14 @@ void Path::addNode(int idx)
 	std::vector<PathNode> copy = nodes;
 	nodes.clear();
 	bool added = false;
-	for (int i = 0; i < copy.size(); i++)
+	for (unsigned i = 0; i < copy.size(); i++)
 	{
 		nodes.push_back(copy[i]);
 		if (idx == i)
 		{
 			added = true;
 			PathNode p;
-			int j = i + 1;
+			unsigned j = i + 1;
 			if (j < copy.size())
 			{
 				Vector add = copy[j].position - copy[i].position;

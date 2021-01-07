@@ -206,10 +206,10 @@ void UserSettings::save()
 
 			XMLElement *xml_actionSet = doc.NewElement("ActionSet");
 			{
-				for (int i = 0; i < control.actionSet.inputSet.size(); i++)
+				for (auto& in: control.actionSet.inputSet)
 				{
 					XMLElement *xml_action = doc.NewElement("Action");
-					ActionInput *actionInput = &control.actionSet.inputSet[i];
+					ActionInput *actionInput = &in;
 					xml_action->SetAttribute("name", actionInput->name.c_str());
 					xml_action->SetAttribute("input", actionInput->toString().c_str());
 
@@ -248,8 +248,7 @@ void UserSettings::save()
 			xml_data->SetAttribute("saveSlot",			data.saveSlot);
 
 			std::ostringstream ss;
-			for (std::set<std::string>::iterator it = dsq->activePatches.begin(); it != dsq->activePatches.end(); ++it)
-				ss << *it << " ";
+			for (auto& patch: dsq->activePatches) ss << patch << " ";
 			xml_data->SetAttribute("activePatches",	ss.str().c_str());
 		}
 		doc.InsertEndChild(xml_data);

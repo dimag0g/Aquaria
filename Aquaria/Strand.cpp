@@ -24,20 +24,17 @@ Strand::Strand(const Vector &position, int segs, int dist) : RenderObject(), Seg
 {
 	cull = false;
 	segments.resize(segs);
-	for (int i = 0; i < segments.size(); i++)
-	{
-		segments[i] = new RenderObject;
-	}
+	for (auto& seg: segments) seg = new RenderObject;
 	initSegments(position);
 }
 
 void Strand::destroy()
 {
 	RenderObject::destroy();
-	for (int i = 0; i < segments.size(); i++)
+	for (auto& seg: segments)
 	{
-		segments[i]->destroy();
-		delete segments[i];
+		seg->destroy();
+		delete seg;
 	}
 	segments.clear();
 }

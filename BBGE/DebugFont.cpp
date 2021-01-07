@@ -62,15 +62,14 @@ float DebugFont::getStringWidth(const std::string& text)
 {
 	int maxchars = 0;
 	int c = 0;
-	for (size_t i = 0; i < text.size(); i++)
+	for (auto& t: text)
 	{
-		if(text[i] == '\n')
+		if(t == '\n')
 		{
 			maxchars = std::max(maxchars, c);
 			c = 0;
 		}
-		else
-			++c;
+		else ++c;
 	}
 	maxchars = std::max(maxchars, c);
 	return fontDrawSize * maxchars * (1.4f * 0.75f);

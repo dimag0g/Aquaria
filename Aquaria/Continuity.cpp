@@ -58,11 +58,11 @@ Continuity::Continuity()
 
 bool Continuity::isIngredientFull(IngredientData *data)
 {
-	for (int i = 0; i < ingredients.size(); i++)
+	for (const auto& ingredient: ingredients)
 	{
-		if (nocasecmp(ingredients[i]->name, data->name)==0)
+		if (nocasecmp(ingredient->name, data->name)==0)
 		{
-			if (ingredients[i]->amount >= ingredients[i]->maxAmount)
+			if (ingredient->amount >= ingredient->maxAmount)
 				return true;
 			else
 				return false;
@@ -103,23 +103,21 @@ int Continuity::indexOfIngredientData(const IngredientData* data) const
 	return -1;
 }
 
-#define FOR_INGREDIENTDATA(x) for (int x = 0; x < ingredientData.size(); x++)
-
 IngredientData *Continuity::getIngredientDataByName(const std::string &name)
 {
-	FOR_INGREDIENTDATA(i)
+	for(auto& ing: ingredientData)
 	{
-		if (nocasecmp(ingredientData[i]->name, name)==0)
-			return ingredientData[i];
+		if (nocasecmp(ing->name, name)==0)
+			return ing;
 	}
 	return 0;
 }
 
 IngredientData *Continuity::getIngredientHeldByName(const std::string &name) const
 {
-	for (int i = 0; i < ingredients.size(); i++) {
-		if (nocasecmp(ingredients[i]->name, name)==0)
-			return ingredients[i];
+	for (auto& ing: ingredients) {
+		if (nocasecmp(ing->name, name)==0)
+			return ing;
 	}
 	return 0;
 }
@@ -225,32 +223,32 @@ void Recipe::learn()
 
 void Recipe::addName(const std::string &name)
 {
-	int i = 0;
-	for (; i < names.size(); i++)
+	bool nameFound = false;
+	for (auto& n: names)
 	{
-		if (names[i].name == name)
+		if (n.name == name)
 		{
-			names[i].amount++;
+			n.amount++;
+			nameFound = true;
 			break;
 		}
 	}
-	if (i == names.size())
-		names.push_back(RecipeName(name));
+	if (!nameFound) names.push_back(RecipeName(name));
 }
 
 void Recipe::addType(IngredientType type, const std::string &typeName)
 {
-	int i = 0;
-	for (; i < types.size(); i++)
+	bool typeFound = false;
+	for (auto& t: types)
 	{
-		if (types[i].type == type)
+		if (t.type == type)
 		{
-			types[i].amount++;
+			t.amount++;
+			typeFound = true;
 			break;
 		}
 	}
-	if (i == types.size())
-		types.push_back(RecipeType(type, typeName));
+	if (!typeFound) types.push_back(RecipeType(type, typeName));
 }
 
 void Continuity::initFoodSort()
@@ -304,7 +302,6 @@ void Continuity::sortFood()
 
 	switch (dsq->continuity.foodSortType)
 	{
-
 	case FOODSORT_BYTYPE:
 		sortOrder = sortByType;
 	break;
@@ -314,46 +311,40 @@ void Continuity::sortFood()
 	case FOODSORT_BYINGREDIENT:
 		sortOrder = sortByIngredients;
 	break;
-
 	}
-
-
 
 	if (doSort)
 	{
-
-
 		std::vector<IngredientData*> sort;
 
-		for (int i = 0; i < dsq->continuity.ingredients.size(); i++)
+		for (auto& ingredient: dsq->continuity.ingredients)
 		{
-			dsq->continuity.ingredients[i]->sorted = false;
+			ingredient->sorted = false;
 		}
 
-		for (int j = 0; j < sortOrder.size(); j++)
+		for (auto& order: sortOrder)
 		{
-			for (int i = 0; i < dsq->continuity.ingredients.size(); i++)
+			for (auto& data: dsq->continuity.ingredients)
 			{
-				IngredientData *data = dsq->continuity.ingredients[i];
 				if (!data->sorted)
 				{
-					if (sortOrder[j].type == IT_NONE || sortOrder[j].type == data->type)
+					if (order.type == IT_NONE || order.type == data->type)
 					{
-						if (!sortOrder[j].name.empty())
+						if (!order.name.empty())
 						{
-							if (sortOrder[j].name == data->name)
+							if (order.name == data->name)
 							{
 								data->sorted = true;
 								sort.push_back(data);
 							}
 						}
-						else if (sortOrder[j].effectType != IET_NONE)
+						else if (order.effectType != IET_NONE)
 						{
-							for (int c = 0; c < data->effects.size(); c++)
+							for (auto& eff: data->effects)
 							{
-								if (data->effects[c].type == sortOrder[j].effectType)
+								if (eff.type == order.effectType)
 								{
-									if (sortOrder[j].effectAmount == 0 || data->effects[c].magnitude == sortOrder[j].effectAmount)
+									if (order.effectAmount == 0 || eff.magnitude == order.effectAmount)
 									{
 										data->sorted = true;
 										sort.push_back(data);
@@ -371,9 +362,8 @@ void Continuity::sortFood()
 			}
 		}
 
-		for (int i = 0; i < dsq->continuity.ingredients.size(); i++)
+		for (auto& data: dsq->continuity.ingredients)
 		{
-			IngredientData *data = dsq->continuity.ingredients[i];
 			if (!data->sorted)
 			{
 				data->sorted = true;
@@ -382,15 +372,9 @@ void Continuity::sortFood()
 		}
 
 		ingredients.clear();
-		for (int i = 0; i < sort.size(); i++) {
-			ingredients.push_back(sort[i]);
-		}
+		for (auto& i: sort) ingredients.push_back(i);
 		sort.clear();
-
 	}
-
-
-
 }
 
 void Continuity::setRegen(float t)
@@ -620,7 +604,7 @@ std::string Continuity::getAllIEString(IngredientData *data)
 {
 	std::ostringstream os;
 
-	for (int i = 0; i < data->effects.size(); i++)
+	for (unsigned i = 0; i < data->effects.size(); i++)
 	{
 		os << getIEString(data, i) << "\n";
 	}
@@ -633,7 +617,7 @@ bool Continuity::applyIngredientEffects(IngredientData *data)
 {
 	bool eaten = true;
 	float y =0;
-	for (int i = 0; i < data->effects.size(); i++)
+	for (unsigned i = 0; i < data->effects.size(); i++)
 	{
 		y = 300 + i * 40;
 		IngredientEffect fx = data->effects[i];
@@ -925,10 +909,7 @@ void Continuity::loadTreasureData()
 
 void Continuity::clearIngredientData()
 {
-	for (IngredientDatas::iterator i = ingredientData.begin(); i != ingredientData.end(); ++ i)
-	{
-		delete *i;
-	}
+	for (auto& ing: ingredientData) delete ing;
 	ingredientData.clear();
 }
 
@@ -1358,10 +1339,9 @@ std::string Continuity::getVoxForSongSlot(int songSlot)
 
 EatData *Continuity::getEatData(const std::string &name)
 {
-	for (int i = 0; i < eats.size(); i++)
+	for (auto& eat: eats)
 	{
-		if (eats[i].name == name)
-			return &eats[i];
+		if (eat.name == name) return &eat;
 	}
 	return 0;
 }
@@ -1735,10 +1715,10 @@ int Continuity::checkSongAssisted(const Song &s)
 			songChecks.push_back(SongCheck(i, s));
 		}
 	}
-	for (int i = 0; i < songChecks.size(); i++)
+	for (auto& check: songChecks)
 	{
 		int j=0,c=0,m=0,last=0,rank=0;
-		int ms=songChecks[i].song->notes.size();
+		int ms=check.song->notes.size();
 		j = 0;
 
 loop:
@@ -1747,7 +1727,7 @@ loop:
 		m = 0;
 		for (c = 0; c < ms; c++)
 		{
-			while (j < song.notes.size() && (*songChecks[i].song).notes[c] != song.notes[j])
+			while (j < song.notes.size() && (*check.song).notes[c] != song.notes[j])
 			{
 				j++;
 				if (j >= song.notes.size())
@@ -1780,31 +1760,26 @@ loop:
 			// make sure last note is more or less close
 			if (song.notes.size()-last < 2)
 			{
-
-
-
-				songChecks[i].pass = true;
-				songChecks[i].rank = rank;
+				check.pass = true;
+				check.rank = rank;
 			}
 		}
 		if (j < song.notes.size())
 			goto loop;
 	}
 	int songIdx = SONG_NONE, lowestRank = -1;
-	for (int i = 0; i < songChecks.size(); i++)
+	for (auto& check: songChecks)
 	{
-		if (songChecks[i].pass)
+		if (check.pass)
 		{
-			int checkRank = songChecks[i].rank;
+			int checkRank = check.rank;
 			if (lowestRank == -1 || checkRank < lowestRank)
 			{
-				lowestRank = songChecks[i].rank;
-				songIdx = songChecks[i].songIdx;
+				lowestRank = check.rank;
+				songIdx = check.songIdx;
 			}
 		}
 	}
-
-
 
 	return songIdx;
 }
@@ -2040,11 +2015,11 @@ void Continuity::shiftWorlds()
 
 BeaconData *Continuity::getBeaconByIndex(int index)
 {
-	for (Beacons::iterator i = beacons.begin(); i != beacons.end(); i++)
+	for (auto& b: beacons)
 	{
-		if ((*i).index == index)
+		if (b.index == index)
 		{
-			return &(*i); // stupidity
+			return &b; // stupidity
 		}
 	}
 	return 0;
@@ -2221,9 +2196,9 @@ void Continuity::initAvatar(Avatar *a)
 
 void Continuity::spawnAllIngredients(const Vector &position)
 {
-	for (int i = 0; i < ingredientData.size(); i++)
+	for (auto& data: ingredientData)
 	{
-		dsq->game->spawnIngredient(ingredientData[i]->name, position, 4, 0);
+		dsq->game->spawnIngredient(data->name, position, 4, 0);
 	}
 }
 
@@ -2289,7 +2264,6 @@ PetData *Continuity::getPetData(int idx)
 		os << "getPetData(" << idx << ") index out of range";
 		debugLog(os.str());
 		return 0;
-
 	}
 
 	return &petData[idx];
@@ -2322,11 +2296,11 @@ void Continuity::setStringFlag(std::string flag, std::string v)
 
 void Continuity::clearTempFlags()
 {
-	for (Flags::iterator i = flags.begin(); i != flags.end(); i++)
+	for (auto& f: flags)
 	{
-		if ((*i).first.find("CHOICE_")!=std::string::npos)
+		if (f.first.find("CHOICE_") != std::string::npos)
 		{
-			(*i).second = 0;
+			f.second = 0;
 		}
 	}
 }
@@ -2360,22 +2334,22 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 	}
 	doc.InsertEndChild(version);
 
-	for (Flags::iterator i = flags.begin(); i != flags.end(); i++)
+	for (auto& f: flags)
 	{
-		if ((*i).first.find("CHOICE_")!=std::string::npos) continue;
-		if ((*i).first.find("TEMP_")!=std::string::npos) continue;
+		if (f.first.find("CHOICE_")!=std::string::npos) continue;
+		if (f.first.find("TEMP_")!=std::string::npos) continue;
 		XMLElement *flag = doc.NewElement("Flag");
-		flag->SetAttribute("name", (*i).first.c_str());
-		flag->SetAttribute("value", (*i).second);
+		flag->SetAttribute("name", f.first.c_str());
+		flag->SetAttribute("value", f.second);
 		doc.InsertEndChild(flag);
 	}
 
 	XMLElement *efx = doc.NewElement("EFX");
 	{
 		std::ostringstream os;
-		for (EntityFlags::iterator i = entityFlags.begin(); i != entityFlags.end(); i++)
+		for (auto& f: entityFlags)
 		{
-			os << (*i).first << " " << (*i).second << " ";
+			os << f.first << " " << f.second << " ";
 		}
 		efx->SetAttribute("a", os.str().c_str());
 	}
@@ -2386,17 +2360,17 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 		std::ostringstream os;
 		bool hasUserString = false;
 		os << this->gems.size() << " ";
-		for (Gems::iterator i = this->gems.begin(); i != this->gems.end(); i++)
+		for (auto& gem: this->gems)
 		{
-			os << (*i).name << " " << (*i).pos.x << " " << (*i).pos.y << " ";
-			os << (*i).canMove << " ";
+			os << gem.name << " " << gem.pos.x << " " << gem.pos.y << " ";
+			os << gem.canMove << " ";
 
-			hasUserString = !(*i).userString.empty();
+			hasUserString = !gem.userString.empty();
 
 			os << hasUserString << " ";
 
 			if (hasUserString)
-				os << spacesToUnderscores((*i).userString) << " ";
+				os << spacesToUnderscores(gem.userString) << " ";
 		}
 		gems->SetAttribute("c", os.str().c_str());
 
@@ -2406,21 +2380,21 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 		os.str("");
 		bool hasMapName = false;
 		os << this->gems.size() << " ";
-		for (Gems::iterator i = this->gems.begin(); i != this->gems.end(); i++)
+		for (auto& gem = this->gems)
 		{
-			os << (*i).name << " ";
-			hasMapName = !(*i).mapName.empty();
+			os << gem.name << " ";
+			hasMapName = !gem.mapName.empty();
 			os << hasMapName << " ";
 			if(hasMapName)
-				os << (*i).mapName << " "; // warning: this will fail to load if the map name contains whitespace
+				os << gem.mapName << " "; // warning: this will fail to load if the map name contains whitespace
 
-			os << (*i).pos.x << " " << (*i).pos.y << " ";
-			os << (*i).canMove << " ";
+			os << gem.pos.x << " " << gem.pos.y << " ";
+			os << gem.canMove << " ";
 
-			hasUserString = !(*i).userString.empty();
+			hasUserString = !gem.userString.empty();
 			os << hasUserString << " ";
 			if (hasUserString)
-				os << spacesToUnderscores((*i).userString) << " ";
+				os << spacesToUnderscores(gem.userString) << " ";
 		}
 		gems->SetAttribute("d", os.str());
 		*/
@@ -2459,10 +2433,9 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 	XMLElement *vox = doc.NewElement("VO");
 	{
 		std::ostringstream os;
-		for (int i = 0; i < dsq->continuity.voiceOversPlayed.size(); i++)
+		for (auto& voice: dsq->continuity.voiceOversPlayed)
 		{
-
-			os << dsq->continuity.voiceOversPlayed[i] << " ";
+			os << voice << " ";
 		}
 		vox->SetAttribute("v", os.str().c_str());
 	}
@@ -2485,12 +2458,11 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 	XMLElement *bcn = doc.NewElement("bcn");
 	{
 		std::ostringstream os;
-		for (Beacons::iterator i = beacons.begin(); i != beacons.end(); i++)
+		for (auto& data: beacons)
 		{
-			BeaconData *data = &(*i);
-			os << data->index << " " << data->on << " ";
-			os << data->color.x << " " << data->color.y << " " << data->color.z << " ";
-			os << data->pos.x << " " << data->pos.y << " " << data->pos.z << " ";
+			os << data.index << " " << data.on << " ";
+			os << data.color.x << " " << data.color.y << " " << data.color.z << " ";
+			os << data.pos.x << " " << data.pos.y << " " << data.pos.z << " ";
 		}
 		bcn->SetAttribute("a", os.str().c_str());
 	}
@@ -2504,12 +2476,12 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 		doc.InsertEndChild(s);
 	}
 
-	for (StringFlags::iterator i = stringFlags.begin(); i != stringFlags.end(); i++)
+	for (auto& f: stringFlags)
 	{
-		if ((*i).first.find("TEMP_")!=std::string::npos) continue;
+		if (f.first.find("TEMP_") != std::string::npos) continue;
 		XMLElement *stringFlag = doc.NewElement("StringFlag");
-		stringFlag->SetAttribute("name", (*i).first.c_str());
-		stringFlag->SetAttribute("value", (*i).second.c_str());
+		stringFlag->SetAttribute("name", f.first.c_str());
+		stringFlag->SetAttribute("value", f.second.c_str());
 		doc.InsertEndChild(stringFlag);
 	}
 
@@ -2541,26 +2513,24 @@ void Continuity::saveFile(int slot, Vector position, unsigned char *scrShotData,
 
 	// new format as used by android version
 	std::ostringstream ingrNames;
-	for (int i = 0; i < ingredients.size(); i++)
+	for (const auto& ingredient: ingredients)
 	{
-		IngredientData *data = ingredients[i];
-		ingrNames << data->name << " " << data->amount << " ";
+		ingrNames << ingredient->name << " " << ingredient->amount << " ";
 	}
 	startData->SetAttribute("ingrNames", ingrNames.str().c_str());
 
 	// for compatibility with older versions
 	std::ostringstream ingrOs;
-	for (int i = 0; i < ingredients.size(); i++)
+	for (const auto& ingredient: ingredients)
 	{
-		IngredientData *data = ingredients[i];
-		ingrOs << data->getIndex() << " " << data->amount << " ";
+		ingrOs << ingredient->getIndex() << " " << ingredient->amount << " ";
 	}
 	startData->SetAttribute("ingr", ingrOs.str().c_str());
 
 	std::ostringstream recOs;
-	for (int i = 0; i < recipes.size(); i++)
+	for (auto& recipe: recipes)
 	{
-		recOs << recipes[i].isKnown() << " ";
+		recOs << recipe.isKnown() << " ";
 	}
 	startData->SetAttribute("rec", recOs.str().c_str());
 
@@ -3067,12 +3037,12 @@ void Continuity::loadFile(int slot)
 		{
 			std::istringstream is(startData->Attribute("rec"));
 
-			for (int i = 0; i < recipes.size(); i++)
+			for (auto& recipe: recipes)
 			{
 				bool known = false;
 				is >> known;
 				if (known)
-					recipes[i].learn();
+					recipe.learn();
 			}
 		}
 
@@ -3475,11 +3445,11 @@ void Continuity::learnRecipe(Recipe *r, bool effects)
 
 void Continuity::learnRecipe(const std::string &result, bool effects)
 {
-	for (int i = 0; i < recipes.size(); i++)
+	for (auto& recipe: recipes)
 	{
-		if (nocasecmp(recipes[i].result, result)==0)
+		if (nocasecmp(recipe.result, result)==0)
 		{
-			learnRecipe(&recipes[i], effects);
+			learnRecipe(&recipe, effects);
 			return;
 		}
 	}

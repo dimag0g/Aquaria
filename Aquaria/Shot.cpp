@@ -326,10 +326,7 @@ void Shot::loadShotBank(const std::string &bank1, const std::string &bank2)
 void Shot::clearShotBank()
 {
 	shotBank.clear();
-	for (Shot::Shots::iterator i = Shot::shots.begin(); i != Shot::shots.end(); i++)
-	{
-		(*i)->shotData = 0;
-	}
+	for (auto& s: shots) s->shotData = 0;
 }
 
 ShotData* Shot::getShotData(const std::string &ident)
@@ -485,8 +482,7 @@ void Shot::onHitWall()
 
 void Shot::killAllShots()
 {
-	for (Shots::iterator i = shots.begin(); i != shots.end(); ++i)
-		(*i)->safeKill();
+	for (auto& s: shots) s->safeKill();
 }
 
 void Shot::clearShotGarbage()
@@ -526,23 +522,18 @@ void Shot::reflectFromEntity(Entity *e)
 
 void Shot::targetDied(Entity *target)
 {
-	int c = 0;
-	for (Shots::iterator i = shots.begin(); i != shots.end(); i++)
+	for (auto& s: shots)
 	{
-		if ((*i)->target == target)
+		if (s->target == target)
 		{
 			debugLog("removing target from shot");
-			(*i)->target = 0;
+			s->target = 0;
 		}
-		if ((*i)->firer == target)
+		if (s->firer == target)
 		{
-			(*i)->firer = 0;
+			s->firer = 0;
 		}
-		c++;
 	}
-
-
-
 }
 
 bool Shot::isHitEnts() const

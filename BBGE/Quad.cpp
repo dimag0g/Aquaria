@@ -74,7 +74,7 @@ void Quad::createStrip(bool vert, int num)
 void Quad::setStrip(const std::vector<Vector> &st)
 {
 	resetStrip();
-	for (int i = 0; i < st.size(); i++)
+	for (unsigned i = 0; i < st.size(); i++)
 	{
 		if (i < strip.size())
 		{
@@ -116,7 +116,7 @@ void Quad::setGridPoints(bool vert, const std::vector<Vector> &points)
 {
 	if (!drawGrid) return;
 	resetGrid();
-	for (int i = 0; i < points.size(); i++)
+	for (unsigned i = 0; i < points.size(); i++)
 	{
 		if (!vert) // horz
 		{
@@ -156,7 +156,7 @@ void Quad::resetStrip()
 {
 	if (!stripVert)
 	{
-		for (int i = 0; i < strip.size(); i++)
+		for (unsigned i = 0; i < strip.size(); i++)
 		{
 
 			float v = (i/(float(strip.size())));
@@ -453,7 +453,7 @@ void Quad::onRender()
 
 		if (!stripVert)
 		{
-			for (int i = 0; i < strip.size(); i++)
+			for (unsigned i = 0; i < strip.size(); i++)
 			{
 				glTexCoord2f(texBits*i, 0);
 				glVertex2f(strip[i].x*width-_w2,  strip[i].y*_h2*10 - _h2);
@@ -469,9 +469,9 @@ void Quad::onRender()
 		glPointSize(64);
 
 		glBegin(GL_POINTS);
-		for (int i = 0; i < strip.size(); i++)
+		for (auto& s: strip)
 		{
-			glVertex2f((strip[i].x*width)-_w2, strip[i].y*height);
+			glVertex2f((s.x*width)-_w2, s.y*height);
 		}
 		glEnd();
 	}

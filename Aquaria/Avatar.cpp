@@ -1208,20 +1208,15 @@ void Avatar::updateDualFormChargeEffects()
 {
 }
 
-void Avatar::lostTarget(int i, Entity *e)
-{
-	dsq->sound->playSfx("target-unlock");
-}
-
 void Avatar::entityDied(Entity *e)
 {
 	Entity::entityDied(e);
-	for (int i = 0; i < targets.size(); i++)
+	for (auto& target: targets)
 	{
-		if (targets[i].e == e)
+		if (target.e == e)
 		{
-			lostTarget(i, 0);
-			targets[i].e = 0;
+			dsq->sound->playSfx("target-unlock");
+			target.e = 0;
 			targetUpdateDelay = 100;
 			targets.clear();
 			break;
@@ -1284,8 +1279,10 @@ void Avatar::enableInput()
 
 	if (dsq->continuity.form == FORM_ENERGY)
 	{
-		for (int i = 0; i < targetQuads.size(); i++)
-			targetQuads[i]->start();
+		for (auto& quad: targetQuads)
+		{
+			quad->start();
+		}
 	}
 
 	setInvincible(false);
@@ -1310,9 +1307,9 @@ void Avatar::disableInput()
 		dsq->setMousePosition(Vector(400,300));
 	}
 
-	for (int i = 0; i < targetQuads.size(); i++)
+	for (auto& quad: targetQuads)
 	{
-		targetQuads[i]->stop();
+		quad->stop();
 	}
 
 	setInvincible(true);
@@ -1320,13 +1317,13 @@ void Avatar::disableInput()
 
 void Avatar::clearTargets()
 {
-	for (int i = 0; i < targets.size(); i++)
+	for (auto& target: targets)
 	{
-		if (targets[i].e)
+		if (target.e)
 		{
-			lostTarget(i, 0);
+			dsq->sound->playSfx("target-unlock");
 		}
-		targets[i].e = 0;
+		target.e = 0;
 	}
 }
 
@@ -1347,9 +1344,9 @@ void Avatar::openSingingInterface()
 		currentSongIdx = SONG_NONE;
 
 		// make the singing icons appear
-		for (int i = 0; i < songIcons.size(); i++)
+		for (auto& icon: songIcons)
 		{
-			songIcons[i]->openInterface();
+			icon->openInterface();
 		}
 		currentSong.notes.clear();
 
@@ -1380,9 +1377,9 @@ void Avatar::closeSingingInterface()
 		applyRidingPosition();
 		singing = false;
 
-		for (int i = 0; i < songIcons.size(); i++)
+		for (auto& icon: songIcons)
 		{
-			songIcons[i]->closeInterface();
+			icon->closeInterface();
 		}
 
 		if (dsq->continuity.form == FORM_NORMAL)
@@ -1470,10 +1467,9 @@ void Avatar::changeForm(FormType form, bool effects, bool onInit, FormType lastF
 	os2 << "lastForm: " << lastForm;
 	debugLog(os2.str());
 
-	for (int i = 0; i < targetQuads.size(); i++)
+	for (auto& q: targetQuads)
 	{
-		if (targetQuads[i])
-			targetQuads[i]->stop();
+		if (q) q->stop();
 	}
 
 
@@ -1632,8 +1628,7 @@ void Avatar::changeForm(FormType form, bool effects, bool onInit, FormType lastF
 	{
 	case FORM_ENERGY:
 		refreshModel("Naija", "EnergyForm");
-		for (int i = 0; i < targetQuads.size(); i++)
-			targetQuads[i]->start();
+		for (auto& q: targetQuads) q->start();
 		leftHandEmitter->load("EnergyFormHandGlow");
 		leftHandEmitter->start();
 		rightHandEmitter->load("EnergyFormHandGlow");
@@ -1723,10 +1718,7 @@ void Avatar::changeForm(FormType form, bool effects, bool onInit, FormType lastF
 		}
 		//dualFormMode = DUALFORM_LI;
 		refreshDualFormModel();
-		/*
-		for (int i = 0; i < targetQuads.size(); i++)
-			targetQuads[i]->start();
-		*/
+		//for (auto& q: targetQuads) q->start();
 	}
 	break;
 	default:
@@ -1756,7 +1748,7 @@ void Avatar::updateSingingInterface(float dt)
 			{
 				float smallestDist = HUGE_VALF;
 				int closest = -1;
-				for (int i = 0; i < songIcons.size(); i++)
+				for (unsigned i = 0; i < songIcons.size(); i++)
 				{
 					float dist = (songIcons[i]->position - core->mouse.position).getSquaredLength2D();
 					if (dist < smallestDist)
@@ -1803,9 +1795,9 @@ void Avatar::updateSingingInterface(float dt)
 					if (!setNote)
 					{
 						bool alreadyAtNote = false;
-						for (int i = 0; i < songIcons.size(); i++)
+						for (const auto& icon: songIcons)
 						{
-							const float dist = (songIcons[i]->position - core->mouse.position).getSquaredLength2D();
+							const float dist = (icon->position - core->mouse.position).getSquaredLength2D();
 							if (dist <= sqr(NOTE_ACCEPT_DISTANCE))
 							{
 								alreadyAtNote = true;
@@ -1830,9 +1822,9 @@ void Avatar::setSongIconPositions()
 {
 	float radIncr = (2*PI)/float(songIcons.size());
 	float rad = 0;
-	for (int i = 0; i < songIcons.size(); i++)
+	for (auto& icon: songIcons)
 	{
-		songIcons[i]->position = Vector(400,300)+/*this->position + */Vector(sinf(rad)*singingInterfaceRadius, cosf(rad)*singingInterfaceRadius);
+		icon->position = Vector(400,300)+/*this->position + */Vector(sinf(rad)*singingInterfaceRadius, cosf(rad)*singingInterfaceRadius);
 		rad += radIncr;
 	}
 }
@@ -1949,12 +1941,12 @@ bool wasDown = false;
 void Avatar::updateTargets(float dt, bool override)
 {
 	DamageType damageType = DT_AVATAR_ENERGYBLAST;
-	for (int i = 0; i < targets.size(); i++)
+	for (auto& t: targets)
 	{
-		if (!targets[i].e
-		|| !targets[i].e->isPresent()
-		|| targets[i].e->getState() == STATE_DEATHSCENE
-		|| !dsq->game->isValidTarget(targets[i].e, this))
+		if (!t.e
+		|| !t.e->isPresent()
+		|| t.e->getState() == STATE_DEATHSCENE
+		|| !dsq->game->isValidTarget(t.e, this))
 		{
 			targets.clear();
 			break;
@@ -2009,15 +2001,15 @@ void Avatar::updateTargets(float dt, bool override)
 			}
 			if (targets.empty())
 			{
-				for (int i = 0; i < oldTargets.size(); i++)
+				for (const auto& target: oldTargets)
 				{
-					Entity *e = oldTargets[i].e;
+					Entity *e = target.e;
 					if (e)
 					{
-						int dist = (e->getTargetPoint(oldTargets[i].targetPt) - distPos).getSquaredLength2D();
+						int dist = (e->getTargetPoint(target.targetPt) - distPos).getSquaredLength2D();
 						if (dist < sqr(TARGET_RANGE+e->getTargetRange()))
 						{
-							targets.push_back(oldTargets[i]);
+							targets.push_back(target);
 						}
 					}
 					else
@@ -2031,15 +2023,15 @@ void Avatar::updateTargets(float dt, bool override)
 	}
 	else
 	{
-		for (int i = 0; i < targets.size(); i++)
+		for (auto& target: targets)
 		{
-			Entity *e = targets[i].e;
+			Entity *e = target.e;
 			if (e)
 			{
 				if (!(position - e->position).isLength2DIn(e->getTargetRange() + TARGET_RANGE + TARGET_GRACE_RANGE) || !dsq->game->isValidTarget(e, this) || !e->isDamageTarget(damageType))
 				{
-					lostTarget(i, targets[i].e);
-					targets[i].e = 0;
+					dsq->sound->playSfx("target-unlock");
+					target.e = 0;
 					targetUpdateDelay = maxTargetDelay;
 					wasDown = false;
 				}
@@ -2054,16 +2046,9 @@ void Avatar::updateTargetQuads(float dt)
 	const Vector cursorpos = dsq->getGameCursorPosition();
 	particleManager->setSuckPosition(1, cursorpos);
 
-	/*
-	for (int i = 0; i < targetQuads.size(); i++)
-	{
-
-	}
-	*/
-
 	static Entity *lastTargetE = 0;
 	const float tt = 0.02;
-	for (int i = 0; i < targets.size(); i++)
+	for (unsigned i = 0; i < targets.size(); i++)
 	{
 		if (targets[i].e)
 		{
@@ -2104,36 +2089,36 @@ void Avatar::updateTargetQuads(float dt)
 
 	if (targets.empty())
 	{
-		for (int i = 0; i < targetQuads.size(); i++)
+		for (auto& q: targetQuads)
 		{
 			if (lastTargetE != 0)
 			{
 				lastTargetE = 0;
 			}
-			//targetQuads[i]->position.interpolateTo(dsq->getGameCursorPosition(),tt);
+			//q->position.interpolateTo(dsq->getGameCursorPosition(),tt);
 			/*
 			std::ostringstream os;
-			os << "setting targetQuads[i] to game cursor, is running = " << targetQuads[i]->isRunning();
+			os << "setting targetQuads[i] to game cursor, is running = " << q->isRunning();
 			debugLog(os.str());
 			*/
 
-			targetQuads[i]->position = cursorpos;
+			q->position = cursorpos;
 			if (dsq->continuity.form == FORM_ENERGY && isInputEnabled())
 			{
-				if (dsq->inputMode == INPUT_JOYSTICK && targetQuads[i]->isRunning())
+				if (dsq->inputMode == INPUT_JOYSTICK && q->isRunning())
 				{
-					targetQuads[i]->stop();
+					q->stop();
 				}
-				else if (dsq->inputMode != INPUT_JOYSTICK && !targetQuads[i]->isRunning())
+				else if (dsq->inputMode != INPUT_JOYSTICK && !q->isRunning())
 				{
-					targetQuads[i]->start();
+					q->start();
 				}
 			}
 
 			/*
-			if (targetQuads[i]->isRunning())
+			if (q->isRunning())
 			{
-				targetQuads[i]->stop();
+				q->stop();
 			}
 			*/
 		}
@@ -2215,7 +2200,7 @@ bool Avatar::fireAtNearestValidEntity(const std::string &shot)
 	if (!targets.empty())
 	{
 		//homing = home;
-		for (int i = 0; i < targets.size(); i++)
+		for (auto& target: targets)
 		{
 			/*
 			if (!aimAt)
@@ -2239,12 +2224,12 @@ bool Avatar::fireAtNearestValidEntity(const std::string &shot)
 
 			if (!aimAt)
 			{
-				dir = (targets[i].e->getTargetPoint(targets[i].targetPt) - p);
+				dir = (target.e->getTargetPoint(target.targetPt) - p);
 			}
 
-			s = dsq->game->fireShot(shot, this, targets[i].e);
+			s = dsq->game->fireShot(shot, this, target.e);
 			s->setAimVector(dir);
-			s->setTargetPoint(targets[i].targetPt);
+			s->setTargetPoint(target.targetPt);
 
 			/*
 			if (dsq->continuity.hasFormUpgrade(FORMUPGRADE_ENERGY2))
@@ -2780,10 +2765,8 @@ void Avatar::formAbility(int ability)
 			core->sound->playSfx("Spirit-Beacon");
 			//dsq->spawnParticleEffect("SpiritBeacon", position);
 			std::list<Shot*> delShots;
-			Shot::Shots::iterator i;
-			for (i = Shot::shots.begin(); i != Shot::shots.end(); i++)
+			for (auto& s: Shot::shots)
 			{
-				Shot *s = (*i);
 				if (s->isActive() && s->shotData && !s->shotData->invisible)
 				{
 					if (!s->firer || s->firer->getEntityType()==ET_ENEMY)
@@ -2797,9 +2780,8 @@ void Avatar::formAbility(int ability)
 					}
 				}
 			}
-			for (std::list<Shot*>::iterator j = delShots.begin(); j != delShots.end(); j++)
+			for (auto& s: delShots)
 			{
-				Shot *s = (*j);
 				s->safeKill();
 			}
 			if (spiritEnergyAbsorbed > 4)
@@ -2945,12 +2927,12 @@ void Avatar::doShock(const std::string &shotName)
 		{
 			while (entitiesToHit.size()<thits)
 			{
-				for (int i = 0; i < localTargets.size(); i++)
+				for (auto& t: localTargets)
 				{
 					if (!(entitiesToHit.size()<thits))
 						break;
-					entitiesToHit.push_back(localTargets[i].e);
-					targets.push_back(localTargets[i]);
+					entitiesToHit.push_back(t.e);
+					targets.push_back(t);
 				}
 			}
 		}
@@ -3833,7 +3815,7 @@ Avatar::Avatar() : Entity(), ActionMapper()
 	dsq->game->addRenderObject(tripper, LR_AFTER_EFFECTS);
 
 	songIcons.resize(8);
-	int i = 0;
+	unsigned i = 0;
 	for (i = 0; i < songIcons.size(); i++)
 	{
 		songIcons[i] = new SongIcon(i);
@@ -4730,9 +4712,8 @@ void Avatar::updateAura(float dt)
 			float a = ((rotation.z)*PI)/180.0f + PI*0.5f;
 			shieldPosition = position + Vector(cosf(a)*100, sinf(a)*100);
 			*/
-			for (Shot::Shots::iterator i = Shot::shots.begin(); i != Shot::shots.end(); ++i)
+			for (auto& s: Shot::shots)
 			{
-				Shot *s = *i;
 				if (s->isActive() && dsq->game->isDamageTypeEnemy(s->getDamageType()) && s->firer != this
 					&& (!s->shotData || !s->shotData->ignoreShield))
 				{
@@ -6963,10 +6944,7 @@ void Avatar::onUpdate(float dt)
 	if(!core->particlesPaused && elementEffectMult > 0)
 	{
 		ElementUpdateList& elems = dsq->game->elementInteractionList;
-		for (ElementUpdateList::iterator it = elems.begin(); it != elems.end(); ++it)
-		{
-			(*it)->doInteraction(this, elementEffectMult, 16);
-		}
+		for (auto& el: elems) el->doInteraction(this, elementEffectMult, 16);
 	}
 }
 
@@ -7108,17 +7086,16 @@ bool Avatar::checkWarpAreas()
 		}
 
 	}
-	for (i = 0; i < dsq->game->warpAreas.size(); i++)
+	for (auto& a: dsq->game->warpAreas)
 	{
-		WarpArea *a = &dsq->game->warpAreas[i];
-		if (a->radius)
+		if (a.radius)
 		{
-			Vector diff = a->position - this->position;
-			if (diff.getSquaredLength2D() < sqr(a->radius))
+			Vector diff = a.position - this->position;
+			if (diff.getSquaredLength2D() < sqr(a.radius))
 			{
 				if (canWarp)
 				{
-					dsq->game->warpToArea(a);
+					dsq->game->warpToArea(&a);
 					return false;
 				}
 				else
@@ -7131,13 +7108,13 @@ bool Avatar::checkWarpAreas()
 		}
 		else
 		{
-			if (position.x > a->position.x - a->w && position.x < a->position.x + a->w)
+			if (position.x > a.position.x - a.w && position.x < a.position.x + a.w)
 			{
-				if (position.y > a->position.y - a->h && position.y < a->position.y + a->h)
+				if (position.y > a.position.y - a.h && position.y < a.position.y + a.h)
 				{
 					if (canWarp)
 					{
-						dsq->game->warpToArea(a);
+						dsq->game->warpToArea(&a);
 						return false;
 					}
 					else

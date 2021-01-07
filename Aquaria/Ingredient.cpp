@@ -41,10 +41,9 @@ int IngredientData::getIndex() const
 
 bool IngredientData::hasIET(IngredientEffectType iet)
 {
-	for (IngredientEffects::iterator i = effects.begin(); i != effects.end(); i++)
+	for (auto& e: effects)
 	{
-		if ((*i).type == iet)
-			return true;
+		if (e.type == iet) return true;
 	}
 	return false;
 }

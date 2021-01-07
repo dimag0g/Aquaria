@@ -111,14 +111,13 @@ ParticleEffect* Core::createParticleEffect(const std::string &name, const Vector
 
 void Core::unloadDevice()
 {
-	for (int i = 0; i < renderObjectLayers.size(); i++)
+	for (auto& rl: renderObjectLayers)
 	{
-		RenderObjectLayer *r = &renderObjectLayers[i];
-		RenderObject *robj = r->getFirst();
+		RenderObject *robj = rl.getFirst();
 		while (robj)
 		{
 			robj->unloadDevice();
-			robj = r->getNext();
+			robj = rl.getNext();
 		}
 	}
 	frameBuffer.unloadDevice();
@@ -129,15 +128,14 @@ void Core::unloadDevice()
 
 void Core::reloadDevice()
 {
-	for (int i = 0; i < renderObjectLayers.size(); i++)
+	for (auto& rl: renderObjectLayers)
 	{
-		RenderObjectLayer *r = &renderObjectLayers[i];
-		r->reloadDevice();
-		RenderObject *robj = r->getFirst();
+		rl.reloadDevice();
+		RenderObject *robj = rl.getFirst();
 		while (robj)
 		{
 			robj->reloadDevice();
-			robj = r->getNext();
+			robj = rl.getNext();
 		}
 	}
 	frameBuffer.reloadDevice();
@@ -1414,11 +1412,7 @@ void Core::quitNestedMain()
 void Core::resetTimer()
 {
 	nowTicks = thenTicks = SDL_GetTicks();
-
-	for (int i = 0; i < avgFPS.size(); i++)
-	{
-		avgFPS[i] = 0;
-	}
+	for (auto& i: avgFPS) i = 0;
 }
 
 void Core::setDockIcon(const std::string &ident)
@@ -1566,11 +1560,11 @@ void Core::main(float runTime)
 
 			float c=0;
 			int n = 0;
-			for (i = 0; i < avgFPS.size(); i++)
+			for (auto& i: avgFPS)
 			{
-				if (avgFPS[i] > 0)
+				if (i> 0)
 				{
-					c += avgFPS[i];
+					c += i;
 					n ++;
 				}
 			}
@@ -2633,17 +2627,16 @@ void Core::shutdownJoystickLibrary()
 
 void Core::clearRenderObjects()
 {
-	for (int i = 0; i < renderObjectLayers.size(); i++)
+	for (auto& rl: renderObjectLayers)
 	{
-
-		RenderObject *r = renderObjectLayers[i].getFirst();
+		RenderObject *r = rl.getFirst();
 		while (r)
 		{
 			if (r)
 			{
 				removeRenderObject(r, DESTROY_RENDER_OBJECT);
 			}
-			r = renderObjectLayers[i].getNext();
+			r = rl.getNext();
 		}
 	}
 }
@@ -2880,10 +2873,7 @@ void Core::switchRenderObjectLayer(RenderObject *o, int toLayer)
 
 void Core::unloadResources()
 {
-	for (int i = 0; i < resources.size(); i++)
-	{
-		resources[i]->unload();
-	}
+	for (auto& rc: resources) rc->unload();
 }
 
 void Core::onReloadResources()
@@ -2892,17 +2882,14 @@ void Core::onReloadResources()
 
 void Core::reloadResources()
 {
-	for (int i = 0; i < resources.size(); i++)
-	{
-		resources[i]->reload();
-	}
+	for (auto& rc: resources) rc->reload();
 	onReloadResources();
 }
 
 void Core::addTexture(Texture *r)
 {
-	for(size_t i = 0; i < resources.size(); ++i)
-		if(resources[i] == r)
+	for (auto& rc: resources)
+		if(rc == r)
 			return;
 
 	resources.push_back(r);
@@ -2969,18 +2956,12 @@ void Core::clearGarbage()
 	BBGE_PROF(Core_clearGarbage);
 	// HACK: optimize this (use a list instead of a queue)
 
-	for (RenderObjectList::iterator i = garbage.begin(); i != garbage.end(); i++)
+	for (auto& obj: garbage)
 	{
-		removeRenderObject(*i, DO_NOT_DESTROY_RENDER_OBJECT);
-
-		(*i)->destroy();
+		removeRenderObject(obj, DO_NOT_DESTROY_RENDER_OBJECT);
+		obj->destroy();
+		deleteRenderObjectMemory(obj);
 	}
-
-	for (RenderObjectList::iterator i = garbage.begin(); i != garbage.end(); i++)
-	{
-		deleteRenderObjectMemory(*i);
-	}
-
 	garbage.clear();
 }
 

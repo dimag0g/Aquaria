@@ -49,9 +49,8 @@ bool Spore::isPositionClear(const Vector &position)
 {
 	if (dsq->game->isObstructed(TileVector(position)))
 		return false;
-	for (Spores::iterator i = spores.begin(); i != spores.end(); i++)
+	for (auto& s: spores)
 	{
-		Spore *s = *i;
 		if (s->position == position)
 		{
 			return false;
@@ -86,9 +85,9 @@ void Spore::onEnterState(int state)
 void Spore::killAllSpores()
 {
 	std::queue<Spore*>sporeDeleteQueue;
-	for (Spores::iterator i = spores.begin(); i != spores.end(); i++)
+	for (auto& s: spores)
 	{
-		sporeDeleteQueue.push(*i);
+		sporeDeleteQueue.push(s);
 	}
 	Spore *s = 0;
 	while (!sporeDeleteQueue.empty())

@@ -42,10 +42,7 @@ void Web::setParentEntity(Entity *e)
 void Web::killAllWebs()
 {
 	std::queue<Web*>shotDeleteQueue;
-	for (Webs::iterator i = webs.begin(); i != webs.end(); i++)
-	{
-		shotDeleteQueue.push(*i);
-	}
+	for (auto& w: webs) shotDeleteQueue.push(w);
 	Web *s = 0;
 	while (!shotDeleteQueue.empty())
 	{

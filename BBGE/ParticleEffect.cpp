@@ -49,12 +49,11 @@ void ParticleEffect::transfer(ParticleEffect *pe)
 	pe->clearEmitters();
 	pe->name = this->name;
 
-	for (Emitters::iterator i = emitters.begin(); i != emitters.end(); i++)
+	for (auto& emi: emitters)
 	{
 		Emitter *e = pe->addNewEmitter();
-		e->data = (*i)->data;
+		e->data = emi->data;
 		e->setTexture(e->data.texture);
-
 	}
 }
 
@@ -68,10 +67,10 @@ Emitter *ParticleEffect::addNewEmitter()
 
 void ParticleEffect::clearEmitters()
 {
-	for (Emitters::iterator i = emitters.begin(); i != emitters.end(); i++)
+	for (auto& e: emitters)
 	{
-		(*i)->destroy();
-		delete *i;
+		e->destroy();
+		delete e;
 	}
 	emitters.clear();
 	children.clear();
@@ -391,34 +390,25 @@ void ParticleEffect::onUpdate(float dt)
 {
 	RenderObject::onUpdate(dt);
 
-
-
 	if (effectLifeCounter == 0)
 	{
 		if (waitForParticles)
 		{
 			// extra loop, could be combined above later
-			int c=0,e=0;
-			for (Emitters::iterator i = emitters.begin(); i != emitters.end(); i++)
+			bool allEmpty = true;
+			for (auto& emi: emitters)
 			{
-				if ((*i)->isEmpty())
-				{
-					e++;
-				}
-				c++;
+				if (!emi->isEmpty()) allEmpty = false;
 			}
-			if (c == e)
+			if (allEmpty)
 			{
-				if (die)
-					safeKill();
+				if (die) safeKill();
 			}
 		}
 		else
 		{
-			if (die)
-				safeKill();
+			if (die) safeKill();
 		}
-
 	}
 
 	if (effectLifeCounter != -1 && running)
@@ -444,27 +434,18 @@ void ParticleEffect::start()
 {
 	effectLifeCounter = effectLife;
 	running = true;
-
-	for (Emitters::iterator i = emitters.begin(); i != emitters.end(); i++)
-	{
-		(*i)->start();
-	}
+	for (auto& emi: emitters) emi->start();
 }
 
 void ParticleEffect::stop()
 {
 	running = false;
-
-	for (Emitters::iterator i = emitters.begin(); i != emitters.end(); i++)
-	{
-		(*i)->stop();
-	}
+	for (auto& emi: emitters) emi->stop();
 }
 
 void ParticleEffect::onRender()
 {
 	BBGE_PROF(ParticleEffect_onRender);
-
 	RenderObject::onRender();
 }
 

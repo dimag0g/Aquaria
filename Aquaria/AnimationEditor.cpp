@@ -587,11 +587,11 @@ void AnimationEditor::reorderKeys()
 void AnimationEditor::rebuildKeyframeWidgets()
 {
 	int offx=0;
-	for (int i = 0; i < keyframeWidgets.size(); i++)
+	for (auto& widget: keyframeWidgets)
 	{
-		keyframeWidgets[i]->setLife(0.03);
-		keyframeWidgets[i]->setDecayRate(1);
-		offx = keyframeWidgets[i]->offset.x;
+		widget->setLife(0.03);
+		widget->setDecayRate(1);
+		offx = widget->offset.x;
 	}
 	keyframeWidgets.clear();
 	if (Animation *a = editSprite->getCurrentAnimation())
@@ -835,9 +835,9 @@ void AnimationEditor::nextKey()
 	{
 		if (core->getCtrlState())
 		{
-			for (int i = 0; i < keyframeWidgets.size(); i++)
+			for (auto& widget: keyframeWidgets)
 			{
-				keyframeWidgets[i]->shiftLeft();
+				widget->shiftLeft();
 			}
 		}
 		else
@@ -866,9 +866,9 @@ void AnimationEditor::prevKey()
 	{
 		if (core->getCtrlState())
 		{
-			for (int i = 0; i < keyframeWidgets.size(); i++)
+			for (auto& widget: keyframeWidgets)
 			{
-				keyframeWidgets[i]->shiftRight();
+				widget->shiftRight();
 			}
 		}
 		else
@@ -1366,14 +1366,13 @@ void AnimationEditor::moveNextWidgets(float dt)
 
 	int s = 0;
 	KeyframeWidget *w=0;
-	for (int i = 0; i < keyframeWidgets.size(); i++)
+	for (auto& widget: keyframeWidgets)
 	{
-		w = keyframeWidgets[i];
 		if (s)
 		{
-			editSprite->getCurrentAnimation()->getKeyframe(w->key)->t += dt;
+			editSprite->getCurrentAnimation()->getKeyframe(widget->key)->t += dt;
 		}
-		else if (!s && KeyframeWidget::movingWidget == w)
+		else if (!s && KeyframeWidget::movingWidget == widget)
 		{
 			s = 1;
 		}

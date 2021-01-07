@@ -1878,9 +1878,9 @@ void DSQ::debugLog(const std::string &s)
 	if (console)
 	{
 		std::string text;
-		for (int i = 0; i < consoleLines.size(); i++)
+		for (auto& line: consoleLines)
 		{
-			text += consoleLines[i] + '\n';
+			text += line + '\n';
 		}
 		console->setText(text);
 	}
@@ -1890,11 +1890,9 @@ void DSQ::debugLog(const std::string &s)
 
 int DSQ::getEntityTypeIndexByName(std::string s)
 {
-	for (int i = 0; i < game->entityTypeList.size(); i++)
+	for (auto& t: game->entityTypeList)
 	{
-		EntityClass *t = &game->entityTypeList[i];
-		if (t->name == s)
-			return t->idx;
+		if (t.name == s) return t.idx;
 	}
 	return -1;
 }
@@ -1994,11 +1992,11 @@ void DSQ::applyPatches()
 
 	loadMods();
 
-	for (std::set<std::string>::iterator it = activePatches.begin(); it != activePatches.end(); ++it)
-		for(int i = 0; i < modEntries.size(); ++i)
-			if(modEntries[i].type == MODTYPE_PATCH)
-				if(!nocasecmp(modEntries[i].path.c_str(), it->c_str()))
-					applyPatch(modEntries[i].path);
+	for (auto& patch: activePatches)
+		for(auto& mod: modEntries)
+			if(mod.type == MODTYPE_PATCH)
+				if(!nocasecmp(mod.path.c_str(), patch.c_str()))
+					applyPatch(mod.path);
 #endif
 #endif
 }
@@ -2440,12 +2438,11 @@ void DSQ::playNoEffect()
 
 void DSQ::clearMenu(float t)
 {
-	for (int i = 0; i < menu.size(); i++)
+	for (auto& m: menu)
 	{
-		menu[i]->setLife(1);
-		menu[i]->setDecayRate(1/t);
-		menu[i]->fadeAlphaWithLife = 1;
-
+		m->setLife(1);
+		m->setDecayRate(1/t);
+		m->fadeAlphaWithLife = 1;
 	}
 	menu.clear();
 }
@@ -2508,9 +2505,9 @@ bool DSQ::onPickedSaveSlot(AquariaSaveSlot *slot)
 		}
 	}
 
-	for (int i = 0; i < saveSlots.size(); i++)
+	for (auto& s: saveSlots)
 	{
-		saveSlots[i]->mbDown = false;
+		s->mbDown = false;
 	}
 
 	return false;
@@ -2814,13 +2811,10 @@ void DSQ::title(bool fade)
 
 void DSQ::createSaveSlotPage()
 {
-	for (int i = 0; i < saveSlots.size(); i++)
-	{
-		saveSlots[i]->safeKill();
-	}
+	for (auto& slot: saveSlots) slot->safeKill();
 
 	saveSlots.resize(saveSlotPageSize);
-	for (int i = 0; i < saveSlots.size(); i++)
+	for (unsigned i = 0; i < saveSlots.size(); i++)
 	{
 		saveSlots[i] = new AquariaSaveSlot(i + user.data.savePage *  saveSlotPageSize);
 		saveSlots[i]->followCamera = 1;
@@ -2914,14 +2908,8 @@ void DSQ::clearSaveSlots(bool trans)
 			saveSlotPageCount->fadeAlphaWithLife = 1;
 	}
 
-	for (int i = 0; i < saveSlots.size(); i++)
-	{
-		saveSlots[i]->close(trans);
-	}
-
+	for (auto& slot: saveSlots) slot->close(trans);
 	saveSlots.clear();
-
-
 
 	if (trans)
 	{
@@ -2953,20 +2941,13 @@ void DSQ::clearSaveSlots(bool trans)
 
 void DSQ::hideSaveSlots()
 {
-	for (int i = 0; i < saveSlots.size(); i++)
-	{
-		saveSlots[i]->hide();
-	}
+	for (auto& slot: saveSlots) slot->hide();
 }
 
 void DSQ::transitionSaveSlots()
 {
 	hideSaveSlotCrap();
-
-	for (int i = 0; i < saveSlots.size(); i++)
-	{
-		saveSlots[i]->transition();
-	}
+	for (auto& slot: saveSlots) slot->transition();
 }
 
 void DSQ::doSaveSlotMenu(SaveSlotMode ssm, const Vector &position)
@@ -3015,12 +2996,8 @@ void DSQ::doSaveSlotMenu(SaveSlotMode ssm, const Vector &position)
 
 	saveSlotMode = ssm;
 
-
-
 	resetTimer();
 	core->main(-1);
-
-
 
 	if (selectedSaveSlot == 0)
 	{
@@ -3445,12 +3422,9 @@ bool DSQ::playedVoice(const std::string &file)
 {
 	std::string f = file;
 	stringToUpper(f);
-	for (int i = 0; i < dsq->continuity.voiceOversPlayed.size(); i++)
+	for (auto& voice: dsq->continuity.voiceOversPlayed)
 	{
-		if (f == dsq->continuity.voiceOversPlayed[i])
-		{
-			return true;
-		}
+		if (f == voice) return true;
 	}
 	return false;
 }
@@ -3713,11 +3687,11 @@ void DSQ::vision(std::string folder, int num, bool ignoreMusic)
 	if (!ignoreMusic)
 		sound->setMusicFader(0, t);
 
-	for (QuadList::iterator i = images.begin(); i != images.end(); i++)
+	for (auto& img: images)
 	{
 		sound->playSfx("memory-flash");
 
-		(*i)->scale.interpolateTo(Vector(1.1,1.1), 0.4);
+		img->scale.interpolateTo(Vector(1.1,1.1), 0.4);
 		fade(0, t);
 		main(t);
 
@@ -3726,7 +3700,7 @@ void DSQ::vision(std::string folder, int num, bool ignoreMusic)
 		fade(1, t);
 		main(t);
 
-		(*i)->alpha = 0;
+		img->alpha = 0;
 	}
 
 	if (game)
@@ -3737,10 +3711,7 @@ void DSQ::vision(std::string folder, int num, bool ignoreMusic)
 	fade(0, t);
 	main(t);
 
-	for (QuadList::iterator i = images.begin(); i != images.end(); i++)
-	{
-		(*i)->safeKill();
-	}
+	for (auto& img: images) img->safeKill();
 	images.clear();
 
 	if (!ignoreMusic)
@@ -4446,8 +4417,8 @@ void DSQ::removeElement(Element *element)
 			break;
 		}
 	}
-
 }
+
 // only happens in editor, no need to optimize
 void DSQ::removeElement(int idx)
 {
@@ -4543,16 +4514,15 @@ void DSQ::updatepecue(float dt)
 	{
 
 		int nz = 0;
-		for (int i = 0; i < pecue.size(); i++)
+		for (auto& p: pecue)
 		{
-			PECue *p = &pecue[i];
-			if (p->t > 0)
+			if (p.t > 0)
 			{
-				p->t -= dt;
-				if (p->t < 0)
+				p.t -= dt;
+				if (p.t < 0)
 				{
-					p->t = 0;
-					spawnParticleEffect(p->name, p->pos, p->rot, 0);
+					p.t = 0;
+					spawnParticleEffect(p.name, p.pos, p.rot, 0);
 				}
 				nz ++;
 			}

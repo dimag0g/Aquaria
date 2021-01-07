@@ -49,8 +49,8 @@ public:
 
 static void generateVectorPath(const JPS::PathVector& rawpath, VectorPath& vp, int offx, int offy)
 {
-	for(JPS::PathVector::const_iterator it = rawpath.begin(); it != rawpath.end(); ++it)
-		vp.addPathNode(Vector((it->x*TILE_SIZE)+TILE_SIZE/2+offx, (it->y*TILE_SIZE)+TILE_SIZE/2)+offy, 0);
+	for(auto& path: rawpath)
+		vp.addPathNode(Vector((path.x*TILE_SIZE)+TILE_SIZE/2+offx, (path.y*TILE_SIZE)+TILE_SIZE/2)+offy, 0);
 }
 
 

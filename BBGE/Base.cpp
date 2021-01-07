@@ -162,12 +162,9 @@ int randRange(int n1, int n2)
 std::string removeSpaces(const std::string &input)
 {
 	std::string result;
-	for (int i = 0; i < input.size(); i++)
+	for (auto& c: input)
 	{
-		if (input[i] != ' ')
-		{
-			result.push_back(input[i]);
-		}
+		if (c != ' ') result.push_back(c);
 	}
 	return result;
 }
@@ -176,8 +173,8 @@ unsigned hash(const std::string &string)
 {
 	unsigned hash = 5381;
 
-	for (int i = 0; i < string.size(); i++)
-		hash = ((hash << 5) + hash) + (unsigned char)string[i];
+	for (auto& c: string)
+		hash = ((hash << 5) + hash) + (unsigned char)c;
 
 	return hash;
 }
@@ -200,10 +197,10 @@ void initCharTranslationTables(const std::map<unsigned char, unsigned char>& tab
 		upperToLowerTable[i - 'a' + 'A'] = i;
 	}
 
-	for (std::map<unsigned char, unsigned char>::const_iterator it = tab.begin(); it != tab.end(); ++it)
+	for (auto& t: tab)
 	{
-		lowerToUpperTable[it->first] = it->second;
-		upperToLowerTable[it->second] = it->first;
+		lowerToUpperTable[t.first] = t.second;
+		upperToLowerTable[t.second] = t.first;
 	}
 }
 
@@ -236,19 +233,19 @@ std::string splitCamelCase(const std::string &input)
 {
 	std::string result;
 	int last = 0;
-	for (int i = 0; i < input.size(); i++)
+	for (auto& in: input)
 	{
 		if (last == 1)
 		{
-			if (charIsUpper(input[i]))
+			if (charIsUpper(in))
 			{
 				result += ' ';
 			}
 		}
 
-		result += input[i];
+		result += in;
 
-		if (charIsUpper(input[i]))
+		if (charIsUpper(in))
 		{
 			last = 2;
 		}
@@ -283,14 +280,12 @@ bool isVectorInRect(const Vector &vec, const Vector &coord1, const Vector &coord
 
 void stringToUpper(std::string &s)
 {
-	for (int i = 0; i < s.size(); i++)
-		s[i] = charToUpper(s[i]);
+	for (auto& c: s) c = charToUpper(c);
 }
 
 void stringToLower(std::string &s)
 {
-	for (int i = 0; i < s.size(); i++)
-		s[i] = charToLower(s[i]);
+	for (auto& c: s) c = charToLower(c);
 }
 
 void stringToLowerUserData(std::string &s)
@@ -540,12 +535,9 @@ void doSingleFile(const std::string &path, const std::string &type, std::string 
 std::string stripEndlineForUnix(const std::string &in)
 {
 	std::string out;
-	for (int i = 0; i < in.size(); i++)
+	for (auto& c: in)
 	{
-		if (int(in[i]) != 13)
-		{
-			out+= in[i];
-		}
+		if (int(c) != 13) out+= c;
 	}
 	return out;
 }
@@ -1072,16 +1064,14 @@ Vector colorRGB(int r, int g, int b)
 std::string underscoresToSpaces(const std::string &str)
 {
 	std::string s = str;
-	for (int i = 0; i < s.size(); i++)
-		if (s[i] == '_') s[i] = ' ';
+	for (auto& c: s) if (c == '_') c = ' ';
 	return s;
 }
 
 std::string spacesToUnderscores(const std::string &str)
 {
 	std::string s = str;
-	for (int i = 0; i < s.size(); i++)
-		if (s[i] == ' ') s[i] = '_';
+	for (auto& c: s) if (c == ' ') c = '_';
 	return s;
 }
 

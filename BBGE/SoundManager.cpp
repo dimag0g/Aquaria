@@ -275,7 +275,6 @@ SoundManager::SoundManager(const std::string &defaultDevice)
 
 	loadProgressCallback = NULL;
 
-
 	int channels	= 128;
 
 	unsigned int	 version;
@@ -331,8 +330,6 @@ SoundManager::SoundManager(const std::string &defaultDevice)
 	SoundCore::system->getNumChannels(&channels);
 #endif
 
-
-
 	debugLog("set file system");
 	result = SoundCore::system->setFileSystem(myopen, myclose, myread, myseek, 2048);
 	if (checkError()) goto get_out;
@@ -361,8 +358,6 @@ SoundManager::SoundManager(const std::string &defaultDevice)
 	result = SoundCore::system->createDSPByType(FMOD_DSP_TYPE_REVERB, &dspReverb);
 	if (checkError()) { dspReverb = 0; }
 
-
-
 	if (dspReverb)
 	{
 		dspReverb->setParameter(FMOD_DSP_REVERB_ROOMSIZE, 0.8);
@@ -372,8 +367,6 @@ SoundManager::SoundManager(const std::string &defaultDevice)
 		dspReverb->setParameter(FMOD_DSP_REVERB_WIDTH, 1.0);
 		dspReverb->setParameter(FMOD_DSP_REVERB_MODE, 0); // 0 or 1
 	}
-
-
 
 	enabled = true;
 
@@ -397,7 +390,6 @@ void SoundManager::toggleEffectMusic(SoundEffectType effect, bool on)
 {
 	if (!enabled) return;
 
-
 	bool active = false;
 
 	switch(effect){
@@ -414,7 +406,6 @@ void SoundManager::toggleEffectMusic(SoundEffectType effect, bool on)
 	case SFX_MAX:
 		break;
 	}
-
 }
 
 
@@ -468,8 +459,6 @@ void SoundManager::setMusicFader(float v, float t)
 		return;
 	}
 
-
-
 	musVol.interpolateTo(Vector(musVol.x, v, musVol.z), t);
 }
 
@@ -484,15 +473,15 @@ SoundManager::~SoundManager()
 	// release
 	if (!enabled) return;
 
-	for (SoundMap::iterator i = soundMap.begin(); i != soundMap.end(); i++)
+	for (auto& s: soundMap)
 	{
-		std::string snd = (*i).first;
+		std::string snd = s.first;
 		debugLog("unloading sound [" + snd + "]");
 #ifndef BBGE_DISABLE_SOUND_CACHE
-		FMOD::Sound *samp = (FMOD::Sound*)((*i).second);
+		FMOD::Sound *samp = (FMOD::Sound*)(s.second);
 		samp->release();
 #else
-		SoundInfo *info = (SoundInfo*)((*i).second);
+		SoundInfo *info = (SoundInfo*)(s.second);
 		delete info;
 #endif
 	}
@@ -513,37 +502,26 @@ void SoundManager::stopAll()
 
 void SoundManager::onVoiceEnded()
 {
-
 	event_stopVoice.call();
-
 
 	if (dspReverb)
 		dspReverb->remove();
 
 	if (!voxQueue.empty())
 	{
-
-
 		std::string vox = voxQueue.front();
-
 
 		if (!voxQueue.empty())
 			voxQueue.pop();
-
 
 		playVoice(vox, SVT_INTERRUPT);
 	}
 	else
 	{
-
 		setMusicFader(1, 1);
 		sfxFader = 1;
 	}
-
-
-
 }
-
 
 bool SoundManager::isPaused()
 {
@@ -551,18 +529,15 @@ bool SoundManager::isPaused()
 
 	if (!enabled) return paused;
 
-
 	result = masterChannelGroup->getPaused(&paused);
 	checkError();
-
 
 	return paused;
 }
 
 void SoundManager::clearFadingSfx()
 {
-
-	SoundCore::FadeChs::iterator i = fadeChs.begin();
+	auto i = fadeChs.begin();
 	for (; i != fadeChs.end(); i++)
 	{
 		//haha:
@@ -573,8 +548,6 @@ void SoundManager::clearFadingSfx()
 		}
 	}
 	SoundCore::fadeChs.clear();
-
-
 }
 
 void SoundManager::update(float dt)
@@ -585,8 +558,6 @@ void SoundManager::update(float dt)
 
 	voxVol.update(dt);
 	musVol.update(dt);
-
-
 
 	if (musicChannel)
 	{
@@ -649,7 +620,7 @@ void SoundManager::update(float dt)
 	if (!fadeChs.empty())
 	{
 		int itr=0;
-		for (FadeChs::iterator i = fadeChs.begin(); i != fadeChs.end();)
+		for (auto i = fadeChs.begin(); i != fadeChs.end();)
 		{
 			itr++;
 			FadeCh *f = &(*i);
@@ -1452,9 +1423,8 @@ void SoundManager::setModSpeed(float speed)
 
 void SoundManager::clearLocalSounds()
 {
-	for (LocalSounds::iterator i = localSounds.begin(); i != localSounds.end(); i++)
+	for (auto& snd: localSounds)
 	{
-		std::string snd = (*i);
 		debugLog("unloading sound [" + snd + "]");
 		FMOD::Sound *samp = (FMOD::Sound*)soundMap[snd];
 		samp->release();
@@ -1591,9 +1561,7 @@ SoundHolder::~SoundHolder()
 
 void SoundHolder::updateSoundPosition(float x, float y)
 {
-	if (activeSounds.size())
-		for(std::set<void*>::iterator it = activeSounds.begin(); it != activeSounds.end(); ++it)
-			sound->setSoundPos(*it, x, y);
+	for(auto& snd: activeSounds) sound->setSoundPos(snd, x, y);
 }
 
 void SoundHolder::stopAllSounds()

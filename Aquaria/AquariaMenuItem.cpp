@@ -85,9 +85,8 @@ void AquariaGuiElement::setFocus(bool v)
 			core->setMousePosition(getGuiPosition());
 
 		AquariaGuiElement *gui=0, *guiThis = (AquariaGuiElement*)this;
-		for (GuiElements::iterator i = guiElements.begin(); i != guiElements.end(); i++)
+		for (auto& gui: guiElements)
 		{
-			gui = (*i);
 			if (gui && gui != guiThis)
 			{
 				gui->setFocus(false);
@@ -170,9 +169,8 @@ void AquariaGuiElement::updateMovement(float dt)
 
 				AquariaGuiElement *gui = 0, *closest = 0;
 				int ch = 64;
-				for (GuiElements::iterator i = guiElements.begin(); i != guiElements.end(); i++)
+				for (auto& gui: guiElements)
 				{
-					gui = (*i);
 					if (gui != this && gui->isGuiVisible() && gui->canDirMove)
 					{
 						int go = 0;
@@ -248,9 +246,8 @@ AquariaGuiElement *AquariaGuiElement::getClosestGuiElement(const Vector& pos)
 {
 	AquariaGuiElement *gui = 0, *closest = 0;
 	float minlen = 0;
-	for (GuiElements::iterator i = guiElements.begin(); i != guiElements.end(); i++)
+	for (auto& gui: guiElements)
 	{
-		gui = (*i);
 		if (gui->isGuiVisible() && gui->hasInput())
 		{
 			Vector dist = gui->getGuiPosition() - pos;

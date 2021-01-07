@@ -33,10 +33,9 @@ ActionMapper::~ActionMapper()
 
 ActionData *ActionMapper::getActionDataByID(int actionID)
 {
-	for (ActionDataSet::iterator i = actionData.begin(); i != actionData.end(); i++)
+	for (auto& data: actionData)
 	{
-		if ((*i).id == actionID)
-			return &(*i);
+		if (data.id == actionID) return &data;
 	}
 	return 0;
 }
@@ -46,11 +45,9 @@ bool ActionMapper::isActing(int actionID)
 	ActionData *ad = getActionDataByID(actionID);
 	if (ad)
 	{
-		ButtonList::iterator i = ad->buttonList.begin();
-		for (; i != ad->buttonList.end(); i++)
+		for (auto& button: ad->buttonList)
 		{
-			if (keyDownMap[(*i)])
-				return true;
+			if (keyDownMap[button]) return true;
 		}
 	}
 	return false;
@@ -102,10 +99,9 @@ void ActionMapper::addAction(Event *event, int k, int state)
 
 Event* ActionMapper::addCreatedEvent(Event *event)
 {
-	for (int i = 0; i < createdEvents.size(); i++)
+	for (auto& e: createdEvents)
 	{
-		if (createdEvents[i] == event)
-			return event;
+		if (e == event) return event;
 	}
 	createdEvents.push_back(event);
 	return event;
@@ -113,10 +109,7 @@ Event* ActionMapper::addCreatedEvent(Event *event)
 
 void ActionMapper::clearCreatedEvents()
 {
-	for (int i = 0; i < createdEvents.size(); i++)
-	{
-		delete createdEvents[i];
-	}
+	for (auto& e: createdEvents) delete e;
 	createdEvents.clear();
 }
 
@@ -137,12 +130,10 @@ void ActionMapper::removeAction(int actionID)
 	ActionData *ad = getActionDataByID(actionID);
 	if (ad)
 	{
-		ButtonList::iterator i = ad->buttonList.begin();
-		for (; i != ad->buttonList.end(); i++)
+		for (auto& button: ad->buttonList)
 		{
-			int k = (*i);
 			cleared = true; // it's a hack, but it works
-			keyDownMap.erase(k);
+			keyDownMap.erase(button);
 		}
 		for (ActionDataSet::iterator i = actionData.begin(); i != actionData.end();)
 		{

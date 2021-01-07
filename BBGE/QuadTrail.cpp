@@ -69,40 +69,40 @@ void QuadTrail::onRender()
 	const float texScale = texture ? float(numPoints*pointDist)/texture->width : 1.0f;
 
 	glBegin(GL_QUAD_STRIP);
-		for (Points::iterator i = points.begin(); i != points.end(); i++)
+	for (auto& pt: points)
+	{
+		if (quadTrailAlphaEffect == QTAE_NORMAL)
 		{
-			if (quadTrailAlphaEffect == QTAE_NORMAL)
-			{
-				glColor4f(1, 1, 1, (*i).life);
-			}
-			if (c == 0)
-			{
-				lastPoint = (*i).point;
-				c++;
-				continue;
-			}
-			p = (*i).point;
-
-			if (c == numPoints-1)
-				p += backOffset;
-
-			diff = p - lastPoint;
-			//possible opt here
-			if (texture)
-				diff.setLength2D(texture->width*0.5f);
-			else
-				diff.setLength2D(32);
-			dl = diff.getPerpendicularLeft();
-			dr = diff.getPerpendicularRight();
-
-			glTexCoord2f(0, (float(c)/numPoints)*texScale);
-			glVertex2f(p.x+dl.x, p.y+dl.y);
-			glTexCoord2f(1, (float(c+1)/numPoints)*texScale);
-			glVertex2f(p.x+dr.x, p.y+dr.y);
-
-			c++;
-			lastPoint = (*i).point;
+			glColor4f(1, 1, 1, pt.life);
 		}
+		if (c == 0)
+		{
+			lastPoint = pt.point;
+			c++;
+			continue;
+		}
+		p = pt.point;
+
+		if (c == numPoints-1)
+			p += backOffset;
+
+		diff = p - lastPoint;
+		//possible opt here
+		if (texture)
+			diff.setLength2D(texture->width*0.5f);
+		else
+			diff.setLength2D(32);
+		dl = diff.getPerpendicularLeft();
+		dr = diff.getPerpendicularRight();
+
+		glTexCoord2f(0, (float(c)/numPoints)*texScale);
+		glVertex2f(p.x+dl.x, p.y+dl.y);
+		glTexCoord2f(1, (float(c+1)/numPoints)*texScale);
+		glVertex2f(p.x+dr.x, p.y+dr.y);
+
+		c++;
+		lastPoint = pt.point;
+	}
 	glEnd();
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -111,10 +111,7 @@ void QuadTrail::onRender()
 	glColor4f(0, 1, 0, 0.5);
 
 	glBegin(GL_POINTS);
-		for (Points::iterator i = points.begin(); i != points.end(); i++)
-		{
-			glVertex2f((*i).point.x, (*i).point.y);
-		}
+	for (auto& pt: points) glVertex2f(pt.point.x, pt.point.y);
 	glEnd();
 }
 
@@ -122,10 +119,9 @@ void QuadTrail::onUpdate(float dt)
 {
 	RenderObject::onUpdate(dt);
 
-	for (Points::iterator i = points.begin(); i != points.end(); i++)
+	for (auto& pt: points)
 	{
-		(*i).life -= dt * lifeRate;
-		if ((*i).life <= 0)
-			(*i).life = 0;
+		pt.life -= dt * lifeRate;
+		if (pt.life <= 0) pt.life = 0;
 	}
 }

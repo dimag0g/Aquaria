@@ -36,18 +36,17 @@ void Segmented::setMaxDist(float m)
 
 void Segmented::initSegments(const Vector &position)
 {
-	for (int i = 0; i < segments.size(); i++)
-		segments[i]->position = position;
+	for (auto& seg: segments) seg->position = position;
 	numSegments = segments.size();
 }
 
 void Segmented::destroySegments(float life)
 {
-	for (int i = 0; i < segments.size(); i++)
+	for (auto& seg: segments)
 	{
-		segments[i]->setLife(life);
-		segments[i]->setDecayRate(1.0f);
-		segments[i]->fadeAlphaWithLife = true;
+		seg->setLife(life);
+		seg->setDecayRate(1.0f);
+		seg->fadeAlphaWithLife = true;
 	}
 	segments.clear();
 }
@@ -85,18 +84,12 @@ void Segmented::updateSegment(int i, const Vector &diff)
 
 void Segmented::updateAlpha(float a)
 {
-	for (int i = 0; i < segments.size(); i++)
-	{
-		segments[i]->alpha = a;
-	}
+	for (auto& seg: segments) seg->alpha = a;
 }
 
 void Segmented::warpSegments(const Vector &position)
 {
-	for (int i = 0; i < segments.size(); i++)
-	{
-		segments[i]->position = position;
-	}
+	for (auto& seg: segments) seg->position = position;
 }
 
 void Segmented::updateSegments(const Vector &position, bool reverse)

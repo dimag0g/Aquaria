@@ -293,8 +293,8 @@ void ModSelectorScreen::initModAndPatchPanel()
 	for(unsigned int i = 0; i < tv.size(); ++i)
 	{
 		ico = NULL;
-		for(RenderObject::Children::iterator it = modgrid->children.begin(); it != modgrid->children.end(); ++it)
-			if(ModIcon* other = dynamic_cast<ModIcon*>(*it))
+		for(auto& child: modgrid->children)
+			if(ModIcon* other = dynamic_cast<ModIcon*>(child))
 				if(other->modId == i)
 				{
 					ico = other;
@@ -303,8 +303,8 @@ void ModSelectorScreen::initModAndPatchPanel()
 
 		if(!ico)
 		{
-			for(RenderObject::Children::iterator it = patchgrid->children.begin(); it != patchgrid->children.end(); ++it)
-				if(ModIcon* other = dynamic_cast<ModIcon*>(*it))
+			for(auto& child: patchgrid->children)
+				if(ModIcon* other = dynamic_cast<ModIcon*>(child))
 					if(other->modId == i)
 					{
 						ico = other;
@@ -366,8 +366,7 @@ void ModSelectorScreen::setSubText(const std::string& s)
 static void _FadeOutAll(RenderObject *r, float t)
 {
 	r->alpha.interpolateTo(0, t);
-	for(RenderObject::Children::iterator it = r->children.begin(); it != r->children.end(); ++it)
-		_FadeOutAll(*it, t);
+	for(auto& child: r->children) _FadeOutAll(child, t);
 }
 
 void ModSelectorScreen::close()
@@ -932,12 +931,12 @@ void IconGridPanel::fade(bool in, bool sc)
 	}
 	alpha.interpolateTo(newalpha, t);
 
-	for(Children::iterator it = children.begin(); it != children.end(); ++it)
+	for(auto& child: children)
 	{
-		(*it)->alpha.interpolateTo(newalpha, t);
+		child->alpha.interpolateTo(newalpha, t);
 
 		if(in)
-			if(ModIcon *ico = dynamic_cast<ModIcon*>(*it))
+			if(ModIcon *ico = dynamic_cast<ModIcon*>(child))
 				ico->updateStatus();
 	}
 }

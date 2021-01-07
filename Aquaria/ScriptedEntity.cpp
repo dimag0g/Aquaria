@@ -257,11 +257,11 @@ void ScriptedEntity::initStrands(int num, int segs, int dist, int strandSpacing,
 {
 	this->strandSpacing = strandSpacing;
 	strands.resize(num);
-	for (int i = 0; i < strands.size(); i++)
+	for (auto& strand: strands)
 	{
-		strands[i] = new Strand(position, segs, dist);
-		strands[i]->color = color;
-		dsq->game->addRenderObject(strands[i], this->layer);
+		strand = new Strand(position, segs, dist);
+		strand->color = color;
+		dsq->game->addRenderObject(strand, this->layer);
 	}
 	updateStrands(0);
 }
@@ -392,7 +392,7 @@ void ScriptedEntity::updateStrands(float dt)
 	angle = (PI*(360-(angle-90)))/180.0;
 
 	float sz = (strands.size()/2);
-	for (int i = 0; i < strands.size(); i++)
+	for (unsigned i = 0; i < strands.size(); i++)
 	{
 		float diff = (i-sz)*strandSpacing;
 		if (diff < 0)
@@ -786,10 +786,7 @@ void ScriptedEntity::onEnterState(int action)
 		destroySegments(1);
 
 
-		for (int i = 0; i < strands.size(); i++)
-		{
-			strands[i]->safeKill();
-		}
+		for (auto& strand: strands) strand->safeKill();
 		strands.clear();
 
 		// BASE ENTITY CLASS WILL HANDLE CLEANING UP HAIR
