@@ -22,20 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // This file implements just enough of the FMOD library with OpenAL to suit
 //  the needs of the existing game code without having to actually ship FMOD.
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
-#ifdef BBGE_BUILD_UNIX
-#include <signal.h>
-#endif
-
-#include "Base.h"
 #include "Core.h"
-
 #include "FmodOpenALBridge.h"
 
+#include <assert.h>
 #include "al.h"
 #include "alc.h"
 
@@ -604,7 +594,6 @@ namespace FMOD {
 // simply nasty.
 #define ALBRIDGE(cls,method,params,args) \
     FMOD_RESULT cls::method params { \
-        if (!this) return FMOD_ERR_INTERNAL; \
         return ((OpenAL##cls *) this)->method args; \
     }
 
@@ -1739,7 +1728,7 @@ FMOD_RESULT OpenALSystem::update()
 }
 
 ALBRIDGE(System, set3DListenerAttributes, (int listener, const FMOD_VECTOR *pos, const FMOD_VECTOR *vel, const FMOD_VECTOR *forward, const FMOD_VECTOR *up),
-    (listener, pos, vel, forward, up));
+    (listener, pos, vel, forward, up))
 FMOD_RESULT OpenALSystem::set3DListenerAttributes(int listener, const FMOD_VECTOR *pos, const FMOD_VECTOR *vel, const FMOD_VECTOR *forward, const FMOD_VECTOR *up)
 {
     // ignore listener parameter; there is only one listener in OpenAL.

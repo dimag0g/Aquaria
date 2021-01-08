@@ -1,15 +1,11 @@
-#include "DSQ.h"
+
 #include "minihttp.h"
 
 #ifdef BBGE_BUILD_VFS
 
 #include "ModDownloader.h"
 #include "ModSelector.h"
-#include "Network.h"
 #include "ttvfs.h"
-
-#include "tinyxml2.h"
-using namespace tinyxml2;
 
 using Network::NetEvent;
 using Network::NE_ABORT;

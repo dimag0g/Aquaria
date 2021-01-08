@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SCRIPTOBJECT_H
 #define SCRIPTOBJECT_H
 
+#include <string>
+
 enum ScriptObjectType
 {
 	SCO_NONE              = 0x0000,

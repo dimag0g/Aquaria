@@ -1,7 +1,7 @@
 #ifndef LOCALIZATION_H
 #define LOCALIZATION_H
 
-#include "Base.h"
+#include <string>
 
 void setUsedLocale(const std::string& s);
 const char *getUsedLocale();

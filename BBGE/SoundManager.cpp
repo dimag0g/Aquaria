@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "Core.h"
-#include "SoundManager.h"
-#include "Base.h"
+#include "Localization.h"
 
 #ifdef BBGE_BUILD_FMOD_OPENAL_BRIDGE
 	#include "FmodOpenALBridge.h"

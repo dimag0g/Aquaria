@@ -24,11 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Base.h"
 #include "RenderObject.h"
 #include "ActionMapper.h"
+#include "Event.h"
+
 
 class StateManager;
-
 class StateObject;
-
 class StateData
 {
 public:

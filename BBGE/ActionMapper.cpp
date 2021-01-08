@@ -18,6 +18,7 @@ See the GNU General Public License for more details.
 #include "ActionMapper.h"
 #include "Core.h"
 
+#include <algorithm>
 
 ActionMapper::ActionMapper()
 {

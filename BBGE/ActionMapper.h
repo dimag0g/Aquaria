@@ -22,11 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define _actionmapper_
 
 #include "Base.h"
+#include <list>
+
 
 class Event;
-class ActionMapper;
-
-#include "ActionSet.h"
 
 typedef std::vector<int> ButtonList;
 

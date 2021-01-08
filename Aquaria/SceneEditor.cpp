@@ -19,12 +19,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "../BBGE/MathFunctions.h"
-#include "../ExternalLibs/glpng.h"
 #include "../BBGE/Gradient.h"
-#include "../BBGE/DebugFont.h"
+#include "../BBGE/RenderObject_inline.h"
 
-#include "Game.h"
-#include "DSQ.h"
+#include "Shot.h"
 #include "Avatar.h"
 #include "GridRender.h"
 

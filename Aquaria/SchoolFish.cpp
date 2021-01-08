@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SchoolFish.h"
 #include "Game.h"
 #include "Avatar.h"
-#include "../BBGE/AfterEffect.h"
 
 const float strengthSeparation = 1;
 const float strengthAlignment = 0.8f;

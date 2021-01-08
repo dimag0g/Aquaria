@@ -18,12 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "../BBGE/Localization.h"
+
 #include "UserSettings.h"
 
 #ifndef AQUARIA_USERSETTINGS_DATAONLY
 	#include "DSQ.h"
 	#include "Game.h"
-	#include "Avatar.h"
 #else
 	#include "tinyxml2.h"
 	using namespace tinyxml2;

@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <queue>
 #include <set>
 #include "Vector.h"
+#include "Event.h"
 
 
 #define BBGE_AUDIO_NOCHANNEL NULL

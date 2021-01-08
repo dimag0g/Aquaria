@@ -36,17 +36,12 @@ BUILD_LINUX
 #include "Event.h"
 #include "StateManager.h"
 #include "Effects.h"
-#include "Localization.h"
-
 #include "DarkLayer.h"
-
-
-
 #include "FrameBuffer.h"
-#include "Shader.h"
+
+#include <fstream>
 
 class ParticleEffect;
-
 class ParticleManager;
 
 void initInputCodeMap();
@@ -785,7 +780,5 @@ protected:
 };
 
 extern Core *core;
-
-#include "RenderObject_inline.h"
 
 #endif

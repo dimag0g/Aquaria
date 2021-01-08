@@ -22,22 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Core.h"
 #include "../ExternalLibs/glpng.h"
 #include "ByteBuffer.h"
+#include "Localization.h"
 
 #include <assert.h>
 
-#if defined(BBGE_BUILD_UNIX)
-#include <stdint.h>
-#endif
 
-
-
-
-	GLint Texture::filter = GL_LINEAR;
-
-	GLint Texture::format = 0;
+GLint Texture::filter = GL_LINEAR;
+GLint Texture::format = 0;
 bool Texture::useMipMaps = true;
-
-
 
 Texture::Texture()
 {

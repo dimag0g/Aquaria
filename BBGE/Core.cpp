@@ -22,9 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Texture.h"
 #include "AfterEffect.h"
 #include "Particles.h"
-
-#include <time.h>
-#include <iostream>
+#include "Localization.h"
 
 #ifdef BBGE_BUILD_UNIX
 #include <limits.h>
@@ -551,10 +549,6 @@ std::string Core::getUserDataFolder()
 }
 
 #if BBGE_BUILD_UNIX
-#include <sys/types.h>
-#include <pwd.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <dirent.h>
 
 // based on code I wrote for PhysicsFS: http://icculus.org/physfs/

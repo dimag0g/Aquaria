@@ -1,10 +1,5 @@
 #include "Localization.h"
-
-#ifdef BBGE_BUILD_UNIX
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
+#include "Base.h"
 
 #ifdef BBGE_BUILD_MACOSX
 #include <CoreFoundation/CFLocale.h>

@@ -497,12 +497,10 @@ SET(BBGE_SRCS
     ${BBGEDIR}/Joystick.cpp
     ${BBGEDIR}/LensFlare.cpp
     ${BBGEDIR}/Localization.cpp
-    ${BBGEDIR}/Math.cpp
     ${BBGEDIR}/MemoryAllocatorSmallBlock.cpp
     ${BBGEDIR}/MT.cpp
     ${BBGEDIR}/ParticleEffect.cpp
     ${BBGEDIR}/ParticleManager.cpp
-    ${BBGEDIR}/Particles.cpp
     ${BBGEDIR}/Precacher.cpp
     ${BBGEDIR}/ProfRender.cpp
     ${BBGEDIR}/Quad.cpp

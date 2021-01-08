@@ -18,29 +18,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "../BBGE/DebugFont.h"
-#include "../ExternalLibs/glpng.h"
 #include "../BBGE/AfterEffect.h"
 #include "../BBGE/ProfRender.h"
+#include "../BBGE/Localization.h"
 
-#include "DSQ.h"
 #include "States.h"
-#include "Game.h"
-#include "Logo.h"
-#include "Avatar.h"
-#include "Entity.h"
 #include "Avatar.h"
 #include "Shot.h"
 #include "GridRender.h"
 #include "AutoMap.h"
-
 #include "RoundedRect.h"
-#include "TTFFont.h"
 #include "ModSelector.h"
 #include "Network.h"
-
-
-	#include <sys/stat.h>
 
 #ifdef BBGE_BUILD_VFS
 #include "ttvfs.h"
@@ -55,8 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void Linux_CopyTree(const char *src, const char *dst)
 {
-
-
 	struct stat statbuf;
 	if (stat(src, &statbuf) == -1)
 		return;

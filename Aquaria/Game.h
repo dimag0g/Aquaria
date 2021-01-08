@@ -21,15 +21,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef GAME_H
 #define GAME_H
 
-#include "../BBGE/DebugFont.h"
 #include "../ExternalLibs/glpng.h"
 
+
 #include "DSQ.h"
-#include "AquariaMenuItem.h"
-#include "ScriptedEntity.h"
+#include "Entity.h"
 #include "TileVector.h"
-#include "Shot.h"
 #include "AquariaProgressBar.h"
+
+#ifdef AQUARIA_BUILD_SCENEEDITOR
+#include "../BBGE/DebugFont.h"
+#endif
 
 #include "tinyxml2.h"
 using namespace tinyxml2;

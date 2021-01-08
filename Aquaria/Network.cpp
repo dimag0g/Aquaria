@@ -1,13 +1,12 @@
+
+#include "../BBGE/Localization.h"
+
 #include "minihttp.h"
 #include "DSQ.h"
 #include "Network.h"
-#include "ByteBuffer.h"
 
 #include "MT.h"
-#include <map>
-#include <set>
-#include <cassert>
-#include "SDL.h"
+
 
 using namespace minihttp;
 

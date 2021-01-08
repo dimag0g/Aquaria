@@ -24,9 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../BBGE/Particles.h"
 
 #include "DSQ.h"
-#include "Hair.h"
 #include "Entity.h"
-
 #include "Web.h"
 
 class TileVector;

@@ -3,7 +3,6 @@
 
 #include <stddef.h>
 #include <assert.h>
-#include <algorithm>
 
 
 class Refcounted

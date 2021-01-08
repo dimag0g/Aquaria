@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define AQ_PATH_H
 
 #include "../BBGE/Base.h"
+#include "../BBGE/Rect.h"
 #include "../BBGE/Particles.h"
 #include "../BBGE/ScriptObject.h"
 #include "ScriptInterface.h"

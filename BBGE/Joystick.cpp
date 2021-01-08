@@ -23,13 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #ifdef __LINUX__
-#include <sys/types.h>
-#include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <linux/input.h>
 #include <errno.h>
-#include <iostream>
 
 #define BITS_TO_LONGS(x) \
 	(((x) + 8 * sizeof (unsigned long) - 1) / (8 * sizeof (unsigned long)))

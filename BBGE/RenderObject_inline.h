@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef RENDEROBJECT_INLINE_H
 #define RENDEROBJECT_INLINE_H
 
+#include "Core.h"
+
 inline bool RenderObject::isOnScreen()
 {
 	if (followCamera == 1) return true;

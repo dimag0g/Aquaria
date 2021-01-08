@@ -26,15 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 const std::string userSettingsFilename = "usersettings.xml";
 
 #ifndef AQUARIA_USERSETTINGS_DATAONLY
-
 	#include "Base.h"
 	#include "ActionMapper.h"
-
+	#include "ActionSet.h"
 #else
 
 	#include <string>
 	#include <vector>
-	#include <sstream>
 
 	class ActionInput
 	{

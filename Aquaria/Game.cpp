@@ -21,23 +21,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../BBGE/Gradient.h"
 #include "../BBGE/AfterEffect.h"
 #include "../BBGE/MathFunctions.h"
-#include "../BBGE/DebugFont.h"
 #include "../BBGE/LensFlare.h"
 #include "../BBGE/RoundedRect.h"
-#include "../BBGE/SimpleIStringStream.h"
+#include "../BBGE/Localization.h"
 
 #include "Game.h"
 #include "GridRender.h"
 #include "WaterSurfaceRender.h"
 #include "ScriptedEntity.h"
 #include "AutoMap.h"
-#include "FlockEntity.h"
 #include "SchoolFish.h"
 #include "Avatar.h"
+#include "Hair.h"
 #include "Shot.h"
-#include "Web.h"
-#include "StatsAndAchievements.h"
-
 #include "ToolTip.h"
 
 std::vector<std::string> allowedMaps;
@@ -983,49 +979,6 @@ Entity *Game::getNearestEntity(const Vector &pos, int radius, Entity *ignore, En
 	}
 	return closest;
 }
-
-/*
-class Avatar : public Entity
-{
-public:
-	Vector position, myZoom;
-	void clampPosition();
-	Entity *convoEntity;
-	std::string convoToRun;
-	Entity *attachedTo;
-	Quad *burstBar;
-	int health;
-	bool isCharging();
-	bool isEntityDead();
-	int maxHealth, mana, maxMana;
-	bool zoomOverriden;
-
-};
-*/
-
-/*
-#include "JetStream.h"
-#include "Rock.h"
-#include "SchoolFish.h"
-*/
-/*
-#include "Game.h"
-#include "AfterEffect.h"
-#include "Button.h"
-#include "TextBox.h"
-#include "LightShaft.h"
-#include "Item.h"
-
-#include "Elements.h"
-#include "WavyWeed.h"
-#include "BitmapFont.h"
-
-#include "ParticleEffects.h"
-
-
-
-// SPECIAL
-*/
 
 Vector menuBgScale;
 

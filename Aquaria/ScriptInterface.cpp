@@ -18,29 +18,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "../BBGE/Localization.h"
+#include "../BBGE/MathFunctions.h"
 
-#include "ScriptInterface.h"
-#include "../BBGE/ScriptObject.h"
+#include <algorithm>
+
 extern "C"
 {
-	#include "lua.h"
 	#include "lauxlib.h"
 	#include "lualib.h"
 }
-#include "DSQ.h"
-#include "Game.h"
 #include "Avatar.h"
+#include "Hair.h"
+#include "ScriptInterface.h"
 #include "ScriptedEntity.h"
 #include "Shot.h"
-#include "Entity.h"
-#include "Web.h"
 #include "GridRender.h"
 #include "AfterEffect.h"
 #include "PathFinding.h"
-#include <algorithm>
 #include "Gradient.h"
 
-#include "../BBGE/MathFunctions.h"
 
 #undef quad // avoid conflict with quad precision types
 
@@ -6059,7 +6056,7 @@ luaFunc(entity_setVel2Len)
 	if(e)
 		e->vel2.setLength2D(lua_tonumber(L, 2));
 	luaReturnNil();
-};
+}
 
 luaFunc(entity_getVel2)
 {

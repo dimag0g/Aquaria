@@ -18,16 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "DSQ.h"
-#include "Game.h"
+#include "../BBGE/Localization.h"
+
 #include "Avatar.h"
-#include "ScriptedEntity.h"
 #include "AutoMap.h"
 #include "GridRender.h"
 #include "DeflateCompressor.h"
 
-#include "tinyxml2.h"
-using namespace tinyxml2;
 
 #define MAX_EATS			8
 

@@ -20,14 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "../BBGE/MathFunctions.h"
 
-#include "Entity.h"
-#include "DSQ.h"
 #include "Game.h"
 #include "Avatar.h"
-#include "ScriptedEntity.h"
+#include "Hair.h"
 #include "Shot.h"
 #include "PathFinding.h"
-
 
 
 void Entity::stopPull()

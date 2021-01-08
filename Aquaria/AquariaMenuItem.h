@@ -24,10 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../BBGE/BitmapFont.h"
 #include "../BBGE/Quad.h"
 #include "../BBGE/ActionMapper.h"
+#include "../BBGE/ActionInput.h"
 #include "../BBGE/Slider.h"
-#include "../BBGE/DebugFont.h"
 #include "../BBGE/TTFFont.h"
-#include "../BBGE/RoundedRect.h"
+#include "../BBGE/Event.h"
 
 #include "tinyxml2.h"
 using namespace tinyxml2;

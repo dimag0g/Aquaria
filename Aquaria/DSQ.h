@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __dsq__
 #define __dsq__
 
-#include "AquariaCompileConfig.h"
 #include "../BBGE/Core.h"
 #include "../BBGE/Quad.h"
 #include "Element.h"
@@ -33,9 +32,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "TTFFont.h"
 
-#include "tinyxml2.h"
-using namespace tinyxml2;
+#ifndef BBGE_SKIP_CONFIG_HEADERS
+	#define AQUARIA_BUILD_CONSOLE 1
+	#define AQUARIA_BUILD_SCENEEDITOR 1
+	#define AQUARIA_CUSTOM_BUILD_ID (" Build " __DATE__ " - " __TIME__)
+	
+	// If defined, this is shown instead of "Aquaria vx.x.x ..." on the title screen.
+	//#define AQUARIA_OVERRIDE_VERSION_STRING "Aquaria OSE v1.001"
+#endif
 
+// Should stay always defined; this tracks visited map areas
 #define AQUARIA_BUILD_MAPVIS
 
 // Define this to save map visited data in a base64-encoded raw format.

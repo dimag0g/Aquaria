@@ -35,29 +35,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	#endif
 #endif
 
-#include "BBGECompileConfig.h"
+#ifndef BBGE_SKIP_CONFIG_HEADERS
 
-#ifdef BBGE_BUILD_WINDOWS
-
-
-
-	#define BBGE_PROF(x)
-
-
-
-#else
-	#define BBGE_PROF(x)
+#define BBGE_BUILD_SDL 1
+#define BBGE_BUILD_FRAMEBUFFER 1
+#define BBGE_BUILD_SHADERS 1
+#define BBGE_BUILD_OPENGL 1
+#define BBGE_BUILD_OPENGL_DYNAMIC 1
+#define BBGE_BUILD_FMOD_OPENAL_BRIDGE 1
+#define BBGE_BUILD_ACHIEVEMENTS_INTERNAL 1
+#define BBGE_BUILD_VFS 1
+#define BBGE_BUILD_SDL2 1
 
 #endif
 
+#define BBGE_PROF(x)
 
-
-	#include "SDL.h"
-
-
-	#define GL_GLEXT_LEGACY 1
-	#include "gl.h"
-	#include "glext.h"
+#include "SDL.h"
 
 #define compile_assert(pred) switch(0){case 0:case (pred):;}
 
@@ -79,30 +73,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma warning(disable:4389) // signed/unsigned mismatch
 
-#pragma warning(disable:4189) // UqqqqSEFUL: local variable is initialized but not referenced
+#pragma warning(disable:4189) // USEFUL: local variable is initialized but not referenced
 #endif
 
 #undef GetCharWidth
 
-#include <string.h>
-
 #include <string>
 #include <sstream>
-#include <fstream>
 #include <vector>
-#include <list>
 #include <queue>
 #include <map>
-#include <stack>
-
-
-#include "Rect.h"
-
 #include "math.h"
 #include "ttvfs_stdio.h"
 
 #include "tinyxml2.h"
-#include "Refcounted.h"
 
 #ifdef BBGE_BUILD_LINUX
 #  include <sys/types.h>
@@ -112,6 +96,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // dumb win32 includes/defines cleanup
 #undef GetCharWidth
 
+#include "Vector.h"
 
 enum Align { ALIGN_CENTER=0, ALIGN_LEFT };
 
@@ -129,13 +114,7 @@ enum Direction
 	DIR_MAX			= 8
 };
 
-#include "Event.h"
-
-#include "Vector.h"
-
-
 const float SQRT2		= 1.41421356;
-
 const float PI			= 3.14159265;
 const float PI_HALF		= 1.57079633;
 
@@ -190,10 +169,6 @@ Vector getDirVector(Direction dir);
 Direction getOppositeDir(Direction dir);
 Direction getNextDirClockwise(Direction dir);
 Vector colorRGB(int r, int g, int b);
-
-GLuint generateEmptyTexture(int res);
-
-
 
 void drawCircle(float radius, int steps=1);
 bool isVectorInRect(const Vector &vec, const Vector &coord1, const Vector &coord2);

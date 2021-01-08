@@ -18,12 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "../BBGE/AfterEffect.h"
+
+
 #include "States.h"
 #include "Game.h"
 #include "AquariaMenuItem.h"
 
-#include "../BBGE/DebugFont.h"
-#include "../BBGE/AfterEffect.h"
 
 Bubble::Bubble() : Quad()
 {
@@ -310,7 +311,7 @@ namespace NagStuff
 
 	const float screenTime = 3;
 	const float nagFadeTime = 1;
-};
+}
 
 using namespace NagStuff;
 

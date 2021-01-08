@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../BBGE/MathFunctions.h"
 
 #include "Avatar.h"
-#include "Game.h"
+#include "Hair.h"
 #include "Shot.h"
 #include "GridRender.h"
 

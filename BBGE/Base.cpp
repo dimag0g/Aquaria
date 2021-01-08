@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "Base.h"
 #include "Core.h"
-#include <algorithm>
 #include <signal.h>
 
 #ifdef BBGE_BUILD_WINDOWS
@@ -816,30 +815,6 @@ bool isTouchingLine(Vector lineStart, Vector lineEnd, Vector point, int radius, 
 	return distsqr <= radius*radius;
 }
 
-
-GLuint generateEmptyTexture(int quality)											// Create An Empty Texture
-{
-	GLuint txtnumber=0;											// Texture ID
-	unsigned char *data;											// Stored Data
-
-	// Create Storage Space For Texture Data (128x128x4)
-	int size = (quality * quality) * 4;
-	data = new unsigned char[size];
-
-	memset(data, 0, size);	// Clear Storage Memory
-
-	glGenTextures(1, &txtnumber);								// Create 1 Texture
-	glBindTexture(GL_TEXTURE_2D, txtnumber);					// Bind The Texture
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, quality, quality, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, data);						// Build Texture Using Information In data
-
-	delete [] data;												// Release data
-
-	return txtnumber;											// Return The Texture ID
-}
-
 Vector randVector(float mag)
 {
 	float angle = (rand() / (float)RAND_MAX) * 2.0f * PI;
@@ -874,7 +849,6 @@ float lerp(const float &v1, const float &v2, float dt, int lerpType)
 #if 0
 
 #include <zlib.h>
-#include <assert.h>
 
 #define CHUNK 16384
 

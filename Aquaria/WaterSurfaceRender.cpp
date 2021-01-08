@@ -1,9 +1,6 @@
 
 #include "WaterSurfaceRender.h"
-#include "DSQ.h"
 #include "Game.h"
-#include "Avatar.h"
-
 
 
 namespace WaterSurfaceRenderStuff

@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#include "Core.h"
+#include "RenderObject_inline.h"
 
-	#define BASE_ARRAY_SIZE 100  // Size of an object array in a new layer
+#define BASE_ARRAY_SIZE 100  // Size of an object array in a new layer
 
 RenderObjectLayer::RenderObjectLayer()
 	: renderObjects(BASE_ARRAY_SIZE)

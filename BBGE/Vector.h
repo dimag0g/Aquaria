@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cmath>
 #include <float.h>
 #include <vector>
-#include "Event.h"
+
 
 typedef float scalar_t;
 
