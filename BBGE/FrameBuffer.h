@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAMEBUFFER_H
 
 #include "Base.h"
-#include "gl.h"
+#include <GL/gl.h>
 
 
 class FrameBuffer

@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define GL_GLEXT_LEGACY 1
 #include "Shader.h"
-#include "glext.h"
 #include "algorithmx.h"
 
 #if defined(BBGE_BUILD_SHADERS) && defined(BBGE_BUILD_OPENGL_DYNAMIC)

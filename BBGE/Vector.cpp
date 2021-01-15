@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Vector.h"
 #include "Base.h"
 #include <float.h>
-#include "gl.h"
+#include <GL/gl.h>
 
 
 /*************************************************************************/

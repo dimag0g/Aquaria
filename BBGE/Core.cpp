@@ -42,16 +42,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <direct.h>
 #endif
 
-	#include "SDL_syswm.h"
-	#ifdef BBGE_BUILD_SDL2
-	static SDL_Window *gScreen=0;
-	static SDL_GLContext gGLctx=0;
-	#else
-	static SDL_Surface *gScreen=0;
-	#endif
+#include "SDL_syswm.h"
+#ifdef BBGE_BUILD_SDL2
+static SDL_Window *gScreen=0;
+static SDL_GLContext gGLctx=0;
+#else
+static SDL_Surface *gScreen=0;
+#endif
 
-	bool ignoreNextMouse=false;
-	Vector unchange;
+bool ignoreNextMouse=false;
+Vector unchange;
 
 #ifdef BBGE_BUILD_VFS
 #include "ttvfs.h"
@@ -66,6 +66,126 @@ Core *core = 0;
 #ifndef KMOD_GUI
 	#define KMOD_GUI KMOD_META
 #endif
+
+//!
+//-----------------------------------------------------------------------------
+// EGL initialization
+//-----------------------------------------------------------------------------
+//#define __SWITCH__
+
+// cannot include <switch.h> due to name conflicts
+// Conflicts can be solved by replacing
+// KEY_* to GAMEKEY_*
+// Event to GameEvent
+struct _NWindow;
+typedef _NWindow NWindow;
+extern "C" NWindow* nwindowGetDefault(void); 
+
+
+#include <EGL/egl.h>    // EGL library
+#include <EGL/eglext.h> // EGL extensions
+
+static EGLDisplay s_display;
+static EGLContext s_context;
+static EGLSurface s_surface;
+
+static bool initEgl(void)
+{
+    // Connect to the EGL default display
+    s_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if (!s_display)
+    {
+        debugLog("Could not connect to display!"); //, eglGetError());
+        goto _fail0;
+    }
+
+    // Initialize the EGL display connection
+    eglInitialize(s_display, nullptr, nullptr);
+
+    // Select OpenGL (Core) as the desired graphics API
+    if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE)
+    {
+        debugLog("Could not set API!"); //, eglGetError());
+        goto _fail1;
+    }
+
+    // Get an appropriate EGL framebuffer configuration
+    EGLConfig config;
+    EGLint numConfigs;
+    static const EGLint framebufferAttributeList[] =
+    {
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_RED_SIZE,     8,
+        EGL_GREEN_SIZE,   8,
+        EGL_BLUE_SIZE,    8,
+        EGL_ALPHA_SIZE,   8,
+        EGL_DEPTH_SIZE,   24,
+        EGL_STENCIL_SIZE, 8,
+        EGL_NONE
+    };
+    eglChooseConfig(s_display, framebufferAttributeList, &config, 1, &numConfigs);
+    if (numConfigs == 0)
+    {
+        debugLog("No config found!"); //, eglGetError());
+        goto _fail1;
+    }
+
+    // Create an EGL window surface
+    s_surface = eglCreateWindowSurface(s_display, config, nwindowGetDefault(), nullptr);
+    if (!s_surface)
+    {
+        debugLog("Surface creation failed!"); //, eglGetError());
+        goto _fail1;
+    }
+
+    // Create an EGL rendering context
+    static const EGLint contextAttributeList[] =
+    {
+        EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR,
+        EGL_CONTEXT_MAJOR_VERSION_KHR, 2,
+        EGL_CONTEXT_MINOR_VERSION_KHR, 1,
+        EGL_NONE
+    };
+    s_context = eglCreateContext(s_display, config, EGL_NO_CONTEXT, contextAttributeList);
+    if (!s_context)
+    {
+        debugLog("Context creation failed!"); //, eglGetError());
+        goto _fail2;
+    }
+
+    // Connect the context to the surface
+    eglMakeCurrent(s_display, s_surface, s_surface, s_context);
+    return true;
+
+_fail2:
+    eglDestroySurface(s_display, s_surface);
+    s_surface = nullptr;
+_fail1:
+    eglTerminate(s_display);
+    s_display = nullptr;
+_fail0:
+    return false;
+}
+
+static void deinitEgl()
+{
+    if (s_display)
+    {
+        eglMakeCurrent(s_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        if (s_context)
+        {
+            eglDestroyContext(s_display, s_context);
+            s_context = nullptr;
+        }
+        if (s_surface)
+        {
+            eglDestroySurface(s_display, s_surface);
+            s_surface = nullptr;
+        }
+        eglTerminate(s_display);
+        s_display = nullptr;
+    }
+}
 
 void Core::initIcon()
 {
@@ -477,7 +597,7 @@ void Core::initPlatform(const std::string &filesystem)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
 
 	CFURLRef resourcesURL = CFBundleCopyBundleURL(mainBundle);
-	char path[PATH_MAX];
+	char path[PATH_MAX] = "/switch/aquaria/";
 	if (!CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
 	{
 		// error!
@@ -502,7 +622,7 @@ void Core::initPlatform(const std::string &filesystem)
 #endif
 	char path[PATH_MAX];
 	// always a symlink to this process's binary, on modern Linux systems.
-	const ssize_t rc = readlink("/proc/self/exe", path, sizeof (path));
+	const ssize_t rc = strlen(path); //!readlink("/proc/self/exe", path, sizeof (path));
 	if ( (rc == -1) || (rc >= sizeof (path)) )
 	{
 		// error!
@@ -655,7 +775,7 @@ void Core::setInputGrab(bool on)
 	if (isWindowFocus())
 	{
 		#ifdef BBGE_BUILD_SDL2
-		SDL_SetWindowGrab(gScreen, on ? SDL_TRUE : SDL_FALSE);
+		//!SDL_SetWindowGrab(gScreen, on ? SDL_TRUE : SDL_FALSE);
 		#else
 		SDL_WM_GrabInput(on?SDL_GRAB_ON:SDL_GRAB_OFF);
 		#endif
@@ -889,10 +1009,10 @@ void Core::setSDLGLAttributes()
 	debugLog(os.str());
 
 #ifndef BBGE_BUILD_SDL2
-	SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, _vsync);
+	//!SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, _vsync);
 #endif
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	//!SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 }
 
 
@@ -1004,8 +1124,8 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 		flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 		if (fullscreen)
 			flags |= SDL_WINDOW_FULLSCREEN;
-		gScreen = SDL_CreateWindow(appName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
-		if (gScreen == NULL)
+		//!gScreen = SDL_CreateWindow(appName.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, flags);
+		/*if (gScreen == NULL)
 		{
 			std::ostringstream os;
 			os << "Couldn't set resolution [" << width << "x" << height << "]\n" << SDL_GetError();
@@ -1013,8 +1133,8 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 			SDL_Quit();
 			exit(0);
 		}
-		gGLctx = SDL_GL_CreateContext(gScreen);
-		if (gGLctx == NULL)
+		gGLctx = SDL_GL_CreateContext(gScreen);*/
+		if (!initEgl()) //!if (gGLctx == NULL)
 		{
 			std::ostringstream os;
 			os << "Couldn't create OpenGL context!\n" << SDL_GetError();
@@ -1022,6 +1142,7 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 			SDL_Quit();
 			exit(0);
 		}
+		gladLoadGL();
 #else
 		Uint32 flags = 0;
 		flags = SDL_OPENGL;
@@ -1054,13 +1175,13 @@ bool Core::initGraphicsLibrary(int width, int height, bool fullscreen, int vsync
 #ifdef BBGE_BUILD_SDL2
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SDL_GL_SwapWindow(gScreen);
+	eglSwapBuffers(s_display, s_surface);//!SDL_GL_SwapWindow(gScreen);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	SDL_GL_SwapWindow(gScreen);
-	if ((_vsync != 1) || (SDL_GL_SetSwapInterval(-1) == -1))
-		SDL_GL_SetSwapInterval(_vsync);
+	eglSwapBuffers(s_display, s_surface);//!SDL_GL_SwapWindow(gScreen);
+	//!if ((_vsync != 1) || (SDL_GL_SetSwapInterval(-1) == -1))
+	//!	SDL_GL_SetSwapInterval(_vsync);
 	const char *name = SDL_GetCurrentVideoDriver();
-	SDL_SetWindowGrab(gScreen, SDL_TRUE);
+	//!SDL_SetWindowGrab(gScreen, SDL_TRUE);
 #else
 	SDL_WM_GrabInput(grabInputOnReentry==0 ? SDL_GRAB_OFF : SDL_GRAB_ON);
 	char name[256];
@@ -1174,10 +1295,11 @@ void Core::shutdownGraphicsLibrary(bool killVideo)
 	glFinish();
 	if (killVideo) {
 		#ifdef BBGE_BUILD_SDL2
-		SDL_SetWindowGrab(gScreen, SDL_FALSE);
-		SDL_GL_MakeCurrent(gScreen, NULL);
-		SDL_GL_DeleteContext(gGLctx);
-		SDL_DestroyWindow(gScreen);
+		//!SDL_SetWindowGrab(gScreen, SDL_FALSE);
+		//!SDL_GL_MakeCurrent(gScreen, NULL);
+		//!SDL_GL_DeleteContext(gGLctx);
+		//!SDL_DestroyWindow(gScreen);
+		deinitEgl();
 		gGLctx = 0;
 		SDL_QuitSubSystem(SDL_INIT_VIDEO);
 		#else
@@ -1422,7 +1544,7 @@ void Core::setMousePosition(const Vector &p)
 	float py = p.y;
 
 	#ifdef BBGE_BUILD_SDL2
-	SDL_WarpMouseInWindow(gScreen, px * (float(width)/float(virtualWidth)), py * (float(height)/float(virtualHeight)));
+	//!SDL_WarpMouseInWindow(gScreen, px * (float(width)/float(virtualWidth)), py * (float(height)/float(virtualHeight)));
 	#else
 	SDL_WarpMouse( px * (float(width)/float(virtualWidth)), py * (float(height)/float(virtualHeight)));
 	#endif
@@ -1500,7 +1622,7 @@ float Core::stopWatch(int d)
 bool Core::isWindowFocus()
 {
 	#ifdef BBGE_BUILD_SDL2
-	return ((SDL_GetWindowFlags(gScreen) & SDL_WINDOW_INPUT_FOCUS) != 0);
+	//!return ((SDL_GetWindowFlags(gScreen) & SDL_WINDOW_INPUT_FOCUS) != 0);
 	#else
 	return ((SDL_GetAppState() & SDL_APPINPUTFOCUS) != 0);
 	#endif
@@ -2584,7 +2706,7 @@ void Core::showBuffer()
 {
 	BBGE_PROF(Core_showBuffer);
 #ifdef BBGE_BUILD_SDL2
-	SDL_GL_SwapWindow(gScreen);
+	eglSwapBuffers(s_display, s_surface);//!SDL_GL_SwapWindow(gScreen);
 #else
 	SDL_GL_SwapBuffers();
 
@@ -2988,7 +3110,7 @@ unsigned char *Core::grabScreenshot(int x, int y, int w, int h)
 	glPixelTransferi(GL_GREEN_SCALE, 1); glPixelTransferi(GL_GREEN_BIAS, 0);
 	glPixelTransferi(GL_BLUE_SCALE, 1); glPixelTransferi(GL_BLUE_BIAS, 0);
 	glPixelTransferi(GL_ALPHA_SCALE, 1); glPixelTransferi(GL_ALPHA_BIAS, 0);
-	glRasterPos2i(0, 0);
+	//!glRasterPos2i(0, 0); TODO: investigate crash
 	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)imageData);
 	glPopAttrib();
 

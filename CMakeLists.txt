@@ -1,3 +1,7 @@
+set(DEVKITPRO $ENV{DEVKITPRO})
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+add_definitions(-D__SWITCH__)
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(Aquaria)
 
@@ -31,7 +35,7 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 OPTION(AQUARIA_DEMO_BUILD "Demo Build?" FALSE)
 OPTION(AQUARIA_USE_VFS "Use Virtual File System? Required for some additional features." TRUE)
 
-OPTION(AQUARIA_USE_SDL2 "Use SDL2" FALSE)
+OPTION(AQUARIA_USE_SDL2 "Use SDL2" TRUE)
 OPTION(AQUARIA_USE_GLM "Use GLM for matrix math" TRUE)
 
 # No Steamworks SDK for Linux at the moment. Roll our own achievements.
@@ -166,7 +170,7 @@ OPTION(AQUARIA_INTERNAL_SDL "Always use included SDL library" ${WIN32_TRUE})
 if(NOT AQUARIA_INTERNAL_SDL)
     if(AQUARIA_USE_SDL2)
         set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-        find_package(SDL2)
+        #find_package(SDL2)
         if(SDL2_FOUND)
             set(SDL_FOUND TRUE)
             set(SDL_INCLUDE_DIR ${SDL2_INCLUDE_DIR})
@@ -203,7 +207,10 @@ if(NOT SDL_FOUND)
         endif(AQUARIA_USE_SDL2)
         set(SDL_LIBRARY ${SDLMAIN_LIBRARY} ${SDL_LIBRARY}) # not seen by user
     else(MACOSX)
-        message(SEND_ERROR "We don't have a prebuilt SDL for this platform.")
+        #message(SEND_ERROR "We don't have a prebuilt SDL for this platform.")
+        set(SDL_INCLUDE_DIR "${DEVKITPRO}/portlibs/switch/include/SDL2")
+        set(SDL_LIBRARY "-lSDL2_mixer -lvorbisidec -lmodplug -lstdc++ -lm -lmpg123 -lm -lopusfile -logg -lopus -lm -lSDL2_image -lpng16 -lz -lm -lnx -lz -ljpeg -lwebp -lm -lSDL2 -march=armv8-a -fPIE -lEGL -lglapi -ldrm_nouveau -lnx -lglad -lEGL -lglapi -ldrm_nouveau -lnx")
+set(SDL_FOUND TRUE)
     endif(MACOSX)
 endif(NOT SDL_FOUND)
 
@@ -220,7 +227,9 @@ if (NOT OPENAL_FOUND)
         message(STATUS "Using internal copy of OpenAL")
         set(OPENAL_LIBRARY "${OPENALDIR}/lib/win32/OpenAL32.lib" CACHE FILEPATH "Where the OpenAL library can be found" FORCE)
     else(WIN32)
-        message(SEND_ERROR "We don't have a prebuilt OpenAL for this platform.")
+        #message(SEND_ERROR "We don't have a prebuilt OpenAL for this platform.")
+        set(OPENAL_INCLUDE_DIR "${DEVKITPRO}/portlibs/switch/include/AL" CACHE PATH "OpenAL include directory" FORCE)
+        set(OPENAL_LIBRARY "-lmojoal" CACHE FILEPATH "Where the OpenAL library can be found" FORCE)
     endif(WIN32)
 endif (NOT OPENAL_FOUND)
 
@@ -255,7 +264,6 @@ endif(FTGL_FOUND)
 ################ End of external libraries
 
 INCLUDE_DIRECTORIES(${BBGEDIR})
-INCLUDE_DIRECTORIES(${BBGEDIR}/GL)
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${SRCDIR})
@@ -301,8 +309,8 @@ endif(NOT(AQUARIA_EXTRA_DATA_DIR STREQUAL ""))
 
 ADD_DEFINITIONS(-DBBGE_SKIP_CONFIG_HEADERS=1) # if this is not defined, it will use .h files to set the necessary defines
 ADD_DEFINITIONS(-DBBGE_BUILD_FRAMEBUFFER=1)
-ADD_DEFINITIONS(-DBBGE_BUILD_SHADERS=1)
-ADD_DEFINITIONS(-DBBGE_BUILD_OPENGL_DYNAMIC=1)
+#ADD_DEFINITIONS(-DBBGE_BUILD_SHADERS=1)
+#ADD_DEFINITIONS(-DBBGE_BUILD_OPENGL_DYNAMIC=1)
 ADD_DEFINITIONS(-DBBGE_BUILD_FMOD_OPENAL_BRIDGE=1)
 IF(AQUARIA_USE_VFS)
     ADD_DEFINITIONS(-DBBGE_BUILD_VFS=1)
@@ -354,7 +362,7 @@ ENDIF(WIN32)
 
 # Build Lua with Unix _setjmp/_longjmp support.
 IF(UNIX AND NOT HAIKU)
-    ADD_DEFINITIONS(-DLUA_USE_ULONGJMP=1)
+#    ADD_DEFINITIONS(-DLUA_USE_ULONGJMP=1)
 ENDIF()
 
 IF(CMAKE_COMPILER_IS_GNUCC)
@@ -370,8 +378,8 @@ IF(CMAKE_COMPILER_IS_GNUCC)
 
     # -O3 breaks on some GCC/MinGW versions, make sure CMake does not set this as default.
     # Exceptions are not used, excluding support for release builds adds less bulk as well.
-    set(CMAKE_C_FLAGS_RELEASE "-O2" CACHE STRING "Flags used for release builds" FORCE)
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -fno-exceptions" CACHE STRING "Flags used for release builds" FORCE)
+    set(CMAKE_C_FLAGS_RELEASE "-O3" CACHE STRING "Flags used for release builds" FORCE)
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fno-exceptions" CACHE STRING "Flags used for release builds" FORCE)
 
     # !!! FIXME: probably not safe long-term.
     # CMake mailing list had this hack for getting rid of -rdynamic:
@@ -716,6 +724,8 @@ ENDIF(AQUARIA_USE_VFS)
 IF(WIN32)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "ws2_32")
 ENDIF(WIN32)
+
+SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "nx")
 
 IF(MACOSX)
     SET(OPTIONAL_LIBS ${OPTIONAL_LIBS} "-framework Carbon")
